@@ -37,13 +37,13 @@ export default {
 
 <template>
   <div class="algorithm-container">
-    <el-dialog title="基础配置" :visible.sync="dialogFormVisible">
+    <el-dialog v-model="dialogFormVisible" title="基础配置">
       <el-form :model="newAlgorithm">
         <el-form-item label="视频流地址" :label-width="formLabelWidth">
           <el-input v-model="newAlgorithm.VideoAddress" autocomplete="off" type="url" placeholder="http://example.com" pattern="http://.*" size="30" required />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer align-right">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">确定部署</el-button>
       </div>
@@ -51,7 +51,7 @@ export default {
     <el-row class="algorithm-row">
       <h4 class="card-title">云端算法</h4>
       <el-divider></el-divider>
-      <el-col v-for="algorithm in cloud" :key="algorithm" class="algorithm-col" span="8">
+      <el-col v-for="algorithm in cloud" :key="algorithm" class="algorithm-col" :span="8">
         <el-card class="cloud-card card">
           <div slot="header">
             <span class="title">{{ algorithm.name }}</span>
