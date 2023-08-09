@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     goToDetail() {
-      router.push('/algorithm/installed/detail')
+      router.push('installed/detail')
     },
   },
 }
@@ -79,7 +79,8 @@ export default {
             <span>运行时间：{{ algorithm.run_time }}</span>
             <br>
             <div class="align-right">
-              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>
+<!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
+              <el-button type="primary" class="el-button">管理</el-button>
             </div>
           </div>
         </el-card>
