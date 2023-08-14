@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div class="gva-card-box">
+      <div class="gva-card">
+        <div class="card-header">
+          <span>访问统计</span>
+        </div>
+        <div class="echart-box">
+          <echarts-line />
+        </div>
+      </div>
+    </div>
     <el-row :gutter="15" class="system_state">
       <el-col :span="12">
         <el-card v-if="state.os" class="card_item">
@@ -141,6 +151,7 @@
 <script setup>
 import { getSystemState } from '@/api/system'
 import { onUnmounted, ref } from 'vue'
+import EchartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
 const timer = ref(null)
 const state = ref({})
 const colors = ref([
