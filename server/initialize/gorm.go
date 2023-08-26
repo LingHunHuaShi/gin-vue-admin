@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 
 	"go.uber.org/zap"
@@ -51,10 +50,10 @@ func RegisterTables() {
 		system.SysAutoCode{},
 		system.SysChatGptOption{},
 
-		example.ExaFile{},
-		example.ExaCustomer{},
-		example.ExaFileChunk{},
-		example.ExaFileUploadAndDownload{},
+		// 自定义的算法，任务和案件表
+		system.SysAlgorithm{},
+		system.SysTask{},
+		system.SysCase{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Error(err))

@@ -56,6 +56,11 @@ func (e *ensureTables) MigrateTable(ctx context.Context) (context.Context, error
 		example.ExaCustomer{},
 		example.ExaFileChunk{},
 		example.ExaFileUploadAndDownload{},
+
+		// 自定义的算法，任务和案件表
+		sysModel.SysAlgorithm{},
+		sysModel.SysTask{},
+		sysModel.SysCase{},
 	}
 	for _, t := range tables {
 		_ = db.AutoMigrate(&t)
@@ -91,6 +96,11 @@ func (e *ensureTables) TableCreated(ctx context.Context) bool {
 		example.ExaCustomer{},
 		example.ExaFileChunk{},
 		example.ExaFileUploadAndDownload{},
+
+		// 自定义的算法，任务和案件表
+		sysModel.SysAlgorithm{},
+		sysModel.SysTask{},
+		sysModel.SysCase{},
 	}
 	yes := true
 	for _, t := range tables {
