@@ -1,5 +1,5 @@
 ## 部署提示
-在克隆本项目之后，需要从[原项目](https://github.com/flipped-aurora/gin-vue-admin/tree/main/server)中替换config.yaml和config.docker.yaml这两个文件到本项目中，然后再运行后端程序即可初始化
+在克隆本项目之后，需要从 [上级目录/原始config备份/](../原始config备份) 中替换config.yaml和config.docker.yaml这两个文件到本项目中，然后再运行后端程序即可初始化
 
 ## server项目结构
 
