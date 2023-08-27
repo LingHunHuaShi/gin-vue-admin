@@ -1,17 +1,49 @@
 import service from '@/utils/request'
 
-// @Tags algorithm
-// @Summary 获取算法列表
-// @Security ApiKeyAuth
-// @accept application/json
-// @Produce application/json
-// @Param data body modelInterface.PageInfo true "分页获取用户列表"
-// @Success 200 {string} json "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /api/getLocalAlgorithmList [get]
-export const getLocalAlgorithmList = (data) => {
+// CreateAlgorithm 算法注册
+// 参数 algorithm
+// 返回值 被添加的算法 错误信息
+export const createAlgorithm = (data) => {
   return service({
-    url: '/api/getLocalAlgorithmList',
-    method: 'get',
+    url: '/algorithm/createAlgorithm',
+    method: 'post',
     data
   })
 }
+
+// DeleteAlgorithm 根据算法ID删除算法及其相关权限信息
+// @param id uint 算法ID
+// @return err error 删除操作的错误，如果删除失败则返回错误信息，否则为nil
+export const deleteAlgorithm = (data) => {
+  return service({
+    url: '/algorithm/deleteAlgorithm',
+    method: 'delete',
+    data
+  })
+}
+
+// FindAlgorithmById FindAlgorithmByID 根据算法ID查找算法信息
+// @param algorithmID uint 要查找的算法ID
+// @return algorithmInter *system.SysAlgorithm 查找到的算法信息，如果找到则为非空指针，否则为nil
+// @return err error 查找操作的错误，如果算法不存在或查找失败则返回错误信息，否则为nil
+export const findAlgorithmById = (data) => {
+  return service({
+    url: '/algorithm/findAlgorithmById',
+    method: 'post',
+    data
+  })
+}
+
+// UpdateAlgorithm 更新算法信息
+// @param algorithmID uint 要更新的算法ID
+// @param newAlgorithm system.SysAlgorithm 新的算法信息
+// @return updatedAlgorithmInter *system.SysAlgorithm 更新后的算法信息，如果更新成功则为非空指针，否则为nil
+// @return err error 更新操作的错误，如果更新失败则返回错误信息，否则为nil
+export const updateAlgorithm = (data) => {
+  return service({
+    url: '/algorithm/updateAlgorithm',
+    method: 'put',
+    data
+  })
+}
+
