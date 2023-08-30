@@ -18,6 +18,10 @@ type ApiGroup struct {
 	DictionaryDetailApi
 	AuthorityBtnApi
 	ChatGptApi
+
+	AlgorithmApi
+	TaskApi
+	CaseApi
 }
 
 var (
@@ -37,4 +41,8 @@ var (
 	dictionaryDetailService = service.ServiceGroupApp.SystemServiceGroup.DictionaryDetailService
 	authorityBtnService     = service.ServiceGroupApp.SystemServiceGroup.AuthorityBtnService
 	chatGptService          = service.ServiceGroupApp.SystemServiceGroup.ChatGptService
+
+	algorithmService = service.ServiceGroupApp.SystemServiceGroup.AlgorithmService
+	taskService      = service.ServiceGroupApp.SystemServiceGroup.TaskService
+	caseService      = service.ServiceGroupApp.SystemServiceGroup.CaseService
 )

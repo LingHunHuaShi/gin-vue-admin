@@ -1,15 +1,17 @@
 package system
 
 import (
+	v1 "github.com/flipped-aurora/gin-vue-admin/server/api/v1"
 	"github.com/flipped-aurora/gin-vue-admin/server/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 type AlgorithmRouter struct{}
 
-func InitAlgorithmRouter(Router *gin.RouterGroup) {
-	AlgorithmRouter := Router.Group("algorithm").Use(middleware.OperationRecord())
+func (s *AlgorithmRouter) InitAlgorithmRouter(Router *gin.RouterGroup) {
+	algorithmRouter := Router.Group("algorithm").Use(middleware.OperationRecord())
+	algorithmApi := v1.ApiGroupApp.SystemApiGroup.AlgorithmApi
 	{
-		//AlgorithmRouter.POST("createAlgorithm", system.AlgorithmService{}.CreateAlgorithm)
+		algorithmRouter.POST("createAlgorithm", algorithmApi.CreateAlgorithm)
 	}
 }
