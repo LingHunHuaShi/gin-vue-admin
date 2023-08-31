@@ -80,3 +80,14 @@ func (algorithmService *AlgorithmService) UpdateAlgorithm(algorithmID uint, newA
 
 	return &algorithm, nil
 }
+
+// QueryAllAlgorithm  查询全部算法信息
+// @return algorithms []system.SysAlgorithm 查找到的全部算法信息，如果没有算法则返回空切片
+// @return err error 查找操作的错误，如果查找失败则返回错误信息，否则为nil
+func (algorithmService *AlgorithmService) QueryAllAlgorithm() (algorithms []system.SysAlgorithm, err error) {
+	err = global.GVA_DB.Find(&algorithms).Error
+	if err != nil {
+		return nil, err
+	}
+	return algorithms, nil
+}
