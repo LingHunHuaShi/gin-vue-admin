@@ -1,46 +1,32 @@
-<script>
-import router from '@/router'
+<script setup>
+import { updateAlgorithm } from '@/api/algorithm'
+import { computed, reactive } from 'vue'
 
-export default {
-  data() {
-    return {
-      installed: [ // 已经部署的算法
-        {
-          name: 'Yolo V5 Lite-g',
-          CPU_rate: '5%',
-          NPU_rate: '37%',
-          run_time: '6:35:09',
-          stream_number: 1,
-        },
-        {
-          name: 'Yolo V5 Lite-g',
-          CPU_rate: '5%',
-          NPU_rate: '37%',
-          run_time: '6:35:09',
-          stream_number: 1,
-        },
-      ],
-    }
-  },
-  computed: {
-    form() {
-      return form
-    },
-    // 计算可用的NPU核心
-    usedNPUCore() {
-      let totalCore = 0
-      for (let i = 0; i < this.installed.length; ++i) {
-        totalCore += this.installed[i].stream_number
-      }
-      return totalCore
-    },
-  },
-  methods: {
-    goToDetail() {
-      router.push('installed/detail')
-    },
-  },
-}
+const installed = reactive([{
+  name: 'Yolo V5 Lite-g',
+  CPU_rate: '5%',
+  NPU_rate: '37%',
+  run_time: '6:35:09',
+  stream_number: 1,
+},
+{
+  name: 'Yolo V5 Lite-g',
+  CPU_rate: '5%',
+  NPU_rate: '37%',
+  run_time: '6:35:09',
+  stream_number: 1,
+}])
+
+const usedNPUCore = computed(() => {
+  let totalCore = 0
+  for (let i = 0; i < installed.length; i++) {
+    totalCore += installed[i].stream_number
+  }
+  return totalCore
+})
+
+const apiTest = updateAlgorithm('a')
+
 </script>
 
 <template>
@@ -50,6 +36,8 @@ export default {
         <el-card class="conclusion-card card" :gutter="20" type="flex">
           <div slot="header">
             <span>核心使用情况</span>
+            <br>
+            <span>apiTest: {{ apiTest }}</span>
             <br>
           </div>
           <div class="content-box">
@@ -79,7 +67,7 @@ export default {
             <span>运行时间：{{ algorithm.run_time }}</span>
             <br>
             <div class="align-right">
-<!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
+              <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
               <el-button type="primary" class="el-button">管理</el-button>
             </div>
           </div>
