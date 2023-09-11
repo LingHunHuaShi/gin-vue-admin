@@ -1,21 +1,24 @@
 <script setup>
 import { updateAlgorithm } from '@/api/algorithm'
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import detail from '../detail.vue'
 
-const installed = reactive([{
-  name: 'Yolo V5 Lite-g',
-  CPU_rate: '5%',
-  NPU_rate: '37%',
-  run_time: '6:35:09',
-  stream_number: 1,
-},
-{
-  name: 'Yolo V5 Lite-g',
-  CPU_rate: '5%',
-  NPU_rate: '37%',
-  run_time: '6:35:09',
-  stream_number: 1,
-}])
+// const installed = reactive([{
+//   name: 'Yolo V5 Lite-g',
+//   CPU_rate: '5%',
+//   NPU_rate: '37%',
+//   run_time: '6:35:09',
+//   stream_number: 1,
+// },
+// {
+//   name: 'Yolo V5 Lite-g',
+//   CPU_rate: '5%',
+//   NPU_rate: '37%',
+//   run_time: '6:35:09',
+//   stream_number: 1,
+// }])
+
+const installed = reactive({})
 
 const usedNPUCore = computed(() => {
   let totalCore = 0
@@ -25,12 +28,29 @@ const usedNPUCore = computed(() => {
   return totalCore
 })
 
-const apiTest = updateAlgorithm('a')
+const testAlgorithm = {
+  algorithmID: 1,
+  algorithmName: 'test',
+  algorithmVersion: '1.0',
+  description: 'None',
+  size: 190.8,
+  downloadLink: 'None',
+  MD5: 'None'
+}
 
+const apiTest = updateAlgorithm(testAlgorithm)
+
+const dialogVisible = ref(false)
 </script>
 
 <template>
   <div class="algorithm-container">
+    <el-dialog v-model="dialogVisible" title="算法配置">
+      <detail />
+      <div slot="footer" class="dialog-footer align-right">
+        <el-button @click="dialogVisible = false">取消更改</el-button>
+      </div>
+    </el-dialog>
     <el-row class="algorithm-row">
       <el-col :span="8" class="algorithm-col">
         <el-card class="conclusion-card card" :gutter="20" type="flex">
@@ -52,12 +72,12 @@ const apiTest = updateAlgorithm('a')
     </el-row>
 
     <el-row class="algorithm-row">
-      <h4 class="card-title">已部署算法</h4>
-      <el-divider/>
+      <span class="title">已部署算法</span>
+      <el-divider />
       <el-col v-for="algorithm in installed" :key="algorithm" class="algorithm-col" :span="8">
         <el-card class="installed-card card">
           <div slot="header">
-            <span class="title">{{ algorithm.name }}</span>
+            <span class="title algorithm-title">{{ algorithm.name }}</span>
           </div>
           <div class="content-box algorithm-text">
             <span>CPU占用率：{{ algorithm.CPU_rate }}</span>
@@ -68,7 +88,7 @@ const apiTest = updateAlgorithm('a')
             <br>
             <div class="align-right">
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
-              <el-button type="primary" class="el-button">管理</el-button>
+              <el-button type="primary" class="el-button" @click="dialogVisible = true">管理</el-button>
             </div>
           </div>
         </el-card>
@@ -83,6 +103,9 @@ const apiTest = updateAlgorithm('a')
     line-height: 35px;
     font-size: 15px;
   }
+  &-title {
+    font-size: 16px;
+  }
 }
 
 .align-right {
@@ -92,6 +115,10 @@ const apiTest = updateAlgorithm('a')
 .card {
   margin-right: 20px;
   margin-bottom: 20px;
+}
+
+.title {
+  font-size: 20px;
 }
 
 </style>

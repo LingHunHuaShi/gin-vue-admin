@@ -3,7 +3,7 @@
     <div class="gva-card-box">
       <div class="gva-card">
         <div class="card-header">
-          <span>访问统计</span>
+          <span></span>
         </div>
         <div class="echart-box">
           <echarts-line />

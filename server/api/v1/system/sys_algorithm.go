@@ -77,13 +77,13 @@ func (s *AlgorithmApi) UpdateAlgorithm(c *gin.Context) {
 	var algorithm system.SysAlgorithm
 	err := c.ShouldBindJSON(&algorithm)
 	if err != nil {
-		response.FailWithMessage("更新失败1!", c)
+		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	newAlgo, err := algorithmService.UpdateAlgorithm(algorithm.AlgorithmID, algorithm)
 	if err != nil {
-		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
-		response.FailWithMessage("更新失败2!", c)
+		global.GVA_LOG.Error("更新失败2 GVA_LOG!", zap.Error(err))
+		response.FailWithMessage("更新失败2 RESPONSE!", c)
 		return
 	}
 	response.OkWithDetailed(newAlgo, "更新成功!", c)
