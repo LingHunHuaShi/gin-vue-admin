@@ -90,3 +90,14 @@ func (t *TaskService) UpdateTaskByTaskID(taskID uint, newTask system.SysTask) (u
 	}
 	return &newTask, err
 }
+
+// QueryOngoingTask
+// 参数 None
+// 返回值 []Task 错误信息
+func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error) {
+	err = global.GVA_DB.Where("Status = ?", 0).Find(&Container).Error
+	if err != nil {
+		return nil, errors.New("查询失败")
+	}
+	return Container, err
+}
