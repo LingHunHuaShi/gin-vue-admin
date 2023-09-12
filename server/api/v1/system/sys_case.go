@@ -104,3 +104,18 @@ func (Api *CaseApi) UpdateCase(c *gin.Context) {
 	}
 	response.OkWithDetailed(MyCase, "更新成功!", c)
 }
+
+//	QueryAllCases 查询全部案例
+//
+// 参数 None
+// 返回值 case列表
+func (Api *CaseApi) QueryAllCases(c *gin.Context) {
+	var cases []system.SysCase
+	cases, err := caseService.QueryAllCases()
+	if err != nil {
+		global.GVA_LOG.Error("查询失败", zap.Error(err))
+		response.FailWithMessage("查询失败", c)
+		return
+	}
+	response.OkWithDetailed(cases, "查询成功", c)
+}

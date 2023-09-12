@@ -15,7 +15,8 @@ func InitTaskRouter(Router *gin.RouterGroup) {
 		TaskRouter.POST("CreateTask", TaskApi.CreateTask)
 		TaskRouter.GET("FindTaskByTaskID", TaskApi.FindTaskByTaskID)
 		TaskRouter.GET("FindTaskByUser", TaskApi.FindTaskByUser)
-		TaskRouter.GET("UpdateTask", TaskApi.UpdateTask)
+		TaskRouter.GET("QueryOngoingTask", TaskApi.QueryOngoingTask)
+		TaskRouter.PUT("UpdateTask", TaskApi.UpdateTask)
 		TaskRouter.DELETE("DeleteTask", TaskApi.DeleteTask)
 	}
 }

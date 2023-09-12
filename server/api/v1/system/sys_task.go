@@ -105,3 +105,17 @@ func (Api *TaskApi) UpdateTask(c *gin.Context) {
 	}
 	response.OkWithDetailed(newTask, "更新成功!", c)
 }
+
+// QueryOngoingTask 查询正在运行的任务
+// 参数 None
+// 返回值 []Task 错误信息
+func (Api *TaskApi) QueryOngoingTask(c *gin.Context) {
+	var Container []*system.SysTask
+	Container, err := taskService.QueryOngoingTask()
+	if err != nil {
+		global.GVA_LOG.Error("查询失败", zap.Error(err))
+		response.FailWithMessage("查询失败", c)
+		return
+	}
+	response.OkWithDetailed(Container, "查询成功", c)
+}

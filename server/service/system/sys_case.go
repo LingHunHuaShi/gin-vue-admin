@@ -89,3 +89,15 @@ func (c *CaseService) UpdateCaseByCaseID(caseID uint, newCase system.SysCase) (u
 	}
 	return &caseObj, err
 }
+
+//	QueryAllCases 查询全部案例
+//
+// 参数 None
+// 返回值 case列表
+func (c *CaseService) QueryAllCases() (Container []system.SysCase, err error) {
+	err = global.GVA_DB.Find(&Container).Error
+	if err != nil {
+		return nil, errors.New("查询失败")
+	}
+	return Container, err
+}
