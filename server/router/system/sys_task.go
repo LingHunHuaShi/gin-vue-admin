@@ -8,15 +8,15 @@ import (
 
 type TaskRouter struct{}
 
-func InitTaskRouter(Router *gin.RouterGroup) {
+func (s *TaskRouter) InitTaskRouter(Router *gin.RouterGroup) {
 	TaskRouter := Router.Group("task").Use(middleware.OperationRecord())
 	TaskApi := v1.ApiGroupApp.SystemApiGroup.TaskApi
 	{
-		TaskRouter.POST("CreateTask", TaskApi.CreateTask)
-		TaskRouter.GET("FindTaskByTaskID", TaskApi.FindTaskByTaskID)
-		TaskRouter.GET("FindTaskByUser", TaskApi.FindTaskByUser)
-		TaskRouter.GET("QueryOngoingTask", TaskApi.QueryOngoingTask)
-		TaskRouter.PUT("UpdateTask", TaskApi.UpdateTask)
-		TaskRouter.DELETE("DeleteTask", TaskApi.DeleteTask)
+		TaskRouter.POST("createTask", TaskApi.CreateTask)
+		TaskRouter.GET("findTaskByTaskID", TaskApi.FindTaskByTaskID)
+		TaskRouter.GET("findTaskByUser", TaskApi.FindTaskByUser)
+		TaskRouter.GET("queryOngoingTask", TaskApi.QueryOngoingTask)
+		TaskRouter.PUT("updateTask", TaskApi.UpdateTask)
+		TaskRouter.DELETE("deleteTask", TaskApi.DeleteTask)
 	}
 }

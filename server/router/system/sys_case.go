@@ -8,15 +8,15 @@ import (
 
 type CaseRouter struct{}
 
-func InitCaseRouter(Router *gin.RouterGroup) {
+func (s *CaseRouter) InitCaseRouter(Router *gin.RouterGroup) {
 	CaseRouter := Router.Group("case").Use(middleware.OperationRecord())
 	CaseApi := v1.ApiGroupApp.SystemApiGroup.CaseApi
 	{
-		CaseRouter.POST("CreateCase", CaseApi.CreateCase)
-		CaseRouter.GET("FindCaseByCaseID", CaseApi.FindCaseByCaseID)
-		CaseRouter.GET("FindCaseByUUID", CaseApi.FindCaseByUUID)
-		CaseRouter.GET("QueryAllCases", CaseApi.QueryAllCases)
-		CaseRouter.PUT("UpdateCase", CaseApi.UpdateCase)
-		CaseRouter.DELETE("DeleteCase", CaseApi.DeleteCase)
+		CaseRouter.POST("createCase", CaseApi.CreateCase)
+		CaseRouter.GET("findCaseByCaseID", CaseApi.FindCaseByCaseID)
+		CaseRouter.GET("findCaseByUUID", CaseApi.FindCaseByUUID)
+		CaseRouter.GET("queryAllCases", CaseApi.QueryAllCases)
+		CaseRouter.PUT("updateCase", CaseApi.UpdateCase)
+		CaseRouter.DELETE("deleteCase", CaseApi.DeleteCase)
 	}
 }

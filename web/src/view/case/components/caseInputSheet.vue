@@ -2,33 +2,33 @@
   <el-form :model="formData" ref="vForm" :rules="rules" label-position="left" label-width="150px"
            size="medium" @submit.prevent
   >
-    <el-form-item label="发起人UUID" prop="inputUUID" class="required label-right-align">
-      <el-input v-model="formData.inputUUID" type="text" clearable></el-input>
+    <el-form-item label="发起人UUID" prop="uuid" class="required label-right-align">
+      <el-input v-model="formData.uuid" type="text" clearable></el-input>
     </el-form-item>
-    <el-form-item label="案例标题" prop="inputTitle" class="required label-right-align">
-      <el-input v-model="formData.inputTitle" type="text" clearable></el-input>
+    <el-form-item label="案例标题" prop="title" class="required label-right-align">
+      <el-input v-model="formData.title" type="text" clearable></el-input>
     </el-form-item>
-    <el-form-item label="案例内容" prop="textareaContent" class="required label-right-align">
-      <el-input type="textarea" v-model="formData.textareaContent" rows="3"></el-input>
+    <el-form-item label="案例内容" prop="content" class="required label-right-align">
+      <el-input type="textarea" v-model="formData.content" rows="3"></el-input>
     </el-form-item>
-    <el-form-item label="紧急等级" prop="radioServerity" class="label-right-align">
-      <el-radio-group v-model="formData.radioServerity">
-        <el-radio v-for="(item, index) in radioServerityOptions" :key="index" :label="item.value"
+    <el-form-item label="紧急等级" prop="severity" class="label-right-align">
+      <el-radio-group v-model="formData.severity">
+        <el-radio v-for="(item, index) in severityOptions" :key="index" :label="item.value"
                   :disabled="item.disabled" style="{display: inline}"
         >{{ item.label }}
         </el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="案例状态" prop="radioStatus" class="label-right-align">
-      <el-radio-group v-model="formData.radioStatus">
-        <el-radio v-for="(item, index) in radioStatusOptions" :key="index" :label="item.value"
+    <el-form-item label="案例状态" prop="status" class="label-right-align">
+      <el-radio-group v-model="formData.status">
+        <el-radio v-for="(item, index) in statusOptions" :key="index" :label="item.value"
                   :disabled="item.disabled" style="{display: inline}"
         >{{ item.label }}
         </el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="解决方案" prop="textareaSolution" class="label-right-align">
-      <el-input type="textarea" v-model="formData.textareaSolution" rows="3"></el-input>
+    <el-form-item label="解决方案" prop="solution" class="label-right-align">
+      <el-input type="textarea" v-model="formData.solution" rows="3"></el-input>
     </el-form-item>
   </el-form>
 
@@ -41,9 +41,8 @@ import {
   reactive,
   getCurrentInstance,
 }
-  from 'vue'
-
-const { expose } = useContext
+from 'vue'
+import { createCase } from '@/api/case'
 
 export default defineComponent({
   components: {},
@@ -51,48 +50,48 @@ export default defineComponent({
   setup() {
     const state = reactive({
       formData: {
-        inputUUID: '',
-        inputTitle: '',
-        textareaContent: '',
-        radioServerity: 1,
-        radioStatus: null,
-        textareaSolution: '',
+        uuid: '',
+        title: '',
+        content: '',
+        severity: 1,
+        status: null,
+        solution: '',
       },
       rules: {
-        inputUUID: [{
+        uuid: [{
           required: true,
           message: '字段值不可为空',
         }],
-        inputTitle: [{
+        title: [{
           required: true,
           message: '字段值不可为空',
         }],
-        textareaContent: [{
+        content: [{
           required: true,
           message: '字段值不可为空',
         }],
       },
-      radioServerityOptions: [{
+      severityOptions: [{
         'label': '普通',
-        'value': 1,
+        'value': 0,
       }, {
         'label': '紧急',
-        'value': 2,
-      }, {
-        'label': '非常紧急',
-        'value': 3,
-      }],
-      radioStatusOptions: [{
-        'label': '未处理',
         'value': 1,
       }, {
-        'label': '正在处理',
+        'label': '非常紧急',
         'value': 2,
+      }],
+      statusOptions: [{
+        'label': '未处理',
+        'value': 0,
+      }, {
+        'label': '正在处理',
+        'value': 1,
       }, {
         'label': '已完成',
-        'value': 3,
+        'value': 2,
       }, {
-        'value': 4,
+        'value': 3,
         'label': '异常',
       }],
     })
@@ -100,17 +99,22 @@ export default defineComponent({
     const submitForm = () => {
       instance.ctx.$refs['vForm'].validate(valid => {
         if (!valid) return
-        //TODO: 提交表单
+        // TODO: 提交表单
+        createCase(state.formData)
       })
     }
     const resetForm = () => {
       instance.ctx.$refs['vForm'].resetFields()
+    }
+    const testFunc = () => {
+      console.log('test function is called')
     }
 
     return {
       ...toRefs(state),
       submitForm,
       resetForm,
+      testFunc,
     }
   },
 })
