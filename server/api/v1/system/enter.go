@@ -19,6 +19,7 @@ type ApiGroup struct {
 	AuthorityBtnApi
 	ChatGptApi
 
+	SysStatusApi
 	AlgorithmApi
 	TaskApi
 	CaseApi
@@ -45,4 +46,5 @@ var (
 	algorithmService = service.ServiceGroupApp.SystemServiceGroup.AlgorithmService
 	taskService      = service.ServiceGroupApp.SystemServiceGroup.TaskService
 	caseService      = service.ServiceGroupApp.SystemServiceGroup.CaseService
+	sysStatusService = service.ServiceGroupApp.SystemServiceGroup.SysStatusService
 )

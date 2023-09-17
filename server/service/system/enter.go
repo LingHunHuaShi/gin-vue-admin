@@ -21,4 +21,5 @@ type ServiceGroup struct {
 	AlgorithmService
 	TaskService
 	CaseService
+	SysStatusService
 }
