@@ -14,6 +14,7 @@ const showInputDialog = () => {
 }
 
 const closeDialog = () => {
+  taskRef.value.resetForm()
   taskDialogVisible.value = false
 }
 

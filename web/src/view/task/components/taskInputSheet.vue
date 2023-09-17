@@ -2,14 +2,8 @@
   <el-form :model="formData" ref="vForm" :rules="rules" label-position="left" label-width="150px"
            size="medium" @submit.prevent
   >
-    <div class="static-content-item">
-      <div>单列表单</div>
-    </div>
-    <div class="static-content-item">
-      <el-divider direction="horizontal"></el-divider>
-    </div>
     <el-form-item label="发起人UUID" prop="uuid" class="required label-right-align">
-      <el-input v-model="formData.uuid" type="text" clearable></el-input>
+      <el-input v-model="formData.uuid" type="text" clearable :disabled="true"></el-input>
     </el-form-item>
     <el-form-item label="视频源" prop="source" class="required label-right-align">
       <el-input v-model="formData.source" type="text" clearable></el-input>
@@ -45,10 +39,11 @@ import {
   defineComponent,
   toRefs,
   reactive,
-  getCurrentInstance,
+  getCurrentInstance, onMounted,
 }
-from 'vue'
+  from 'vue'
 import { createTask } from '@/api/task'
+import { getUserInfo } from '@/api/user'
 
 export default defineComponent({
   components: {},
@@ -109,6 +104,15 @@ export default defineComponent({
         'value': 3,
       }],
     })
+    const setCurrentUuid = async() => {
+      await getUserInfo().then((result) => {
+        state.formData.uuid = result.data.userInfo.uuid
+      })
+    }
+    onMounted(() => {
+      setCurrentUuid()
+    })
+
     const instance = getCurrentInstance()
     const submitForm = () => {
       instance.ctx.$refs['vForm'].validate(valid => {
@@ -120,10 +124,7 @@ export default defineComponent({
     const resetForm = () => {
       instance.ctx.$refs['vForm'].resetFields()
     }
-    const expose = { ...toRefs(state), submitForm, resetForm }
-    defineExpose(
-      expose
-    )
+
     return {
       ...toRefs(state),
       submitForm,

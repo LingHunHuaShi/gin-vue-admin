@@ -3,7 +3,7 @@
            size="medium" @submit.prevent
   >
     <el-form-item label="发起人UUID" prop="uuid" class="required label-right-align">
-      <el-input v-model="formData.uuid" type="text" clearable></el-input>
+      <el-input v-model="formData.uuid" type="text" clearable :disabled="true"></el-input>
     </el-form-item>
     <el-form-item label="案例标题" prop="title" class="required label-right-align">
       <el-input v-model="formData.title" type="text" clearable></el-input>
@@ -39,10 +39,11 @@ import {
   defineComponent,
   toRefs,
   reactive,
-  getCurrentInstance,
+  getCurrentInstance, onMounted,
 }
-from 'vue'
+  from 'vue'
 import { createCase } from '@/api/case'
+import { getUserInfo } from '@/api/user'
 
 export default defineComponent({
   components: {},
@@ -94,6 +95,14 @@ export default defineComponent({
         'value': 3,
         'label': '异常',
       }],
+    })
+    const setCurrentUser = async() => {
+      await getUserInfo().then((result) => {
+        state.formData.uuid = result.data.userInfo.uuid
+      })
+    }
+    onMounted(() => {
+      setCurrentUser()
     })
     const instance = getCurrentInstance()
     const submitForm = () => {

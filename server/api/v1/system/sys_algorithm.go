@@ -88,3 +88,17 @@ func (s *AlgorithmApi) UpdateAlgorithm(c *gin.Context) {
 	}
 	response.OkWithDetailed(newAlgo, "更新成功!", c)
 }
+
+// QueryAllAlgorithm  查询全部算法信息
+// @return algorithms []system.SysAlgorithm 查找到的全部算法信息，如果没有算法则返回空切片
+// @return err error 查找操作的错误，如果查找失败则返回错误信息，否则为nil
+func (s *AlgorithmApi) QueryAllAlgorithm(c *gin.Context) {
+
+	algos, err := algorithmService.QueryAllAlgorithm()
+	if err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败!1"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(algos, "查询成功!", c)
+}
