@@ -47,10 +47,18 @@ export const deleteTask = (data) => {
 // UpdateTaskByTaskID 根据任务ID更新任务信息
 // 参数 taskID 任务ID, newTask 新的任务信息
 // 返回值 更新后的任务对象指针 错误信息
-export const updataTaskByTaskID = (data) => {
+export const updateTaskByTaskID = (data) => {
   return service({
     url: '/task/updateTaskByTaskID',
     method: 'put',
+    data
+  })
+}
+
+export const queryAllTasks = (data) => {
+  return service({
+    url: '/task/queryAllTasks',
+    method: 'get',
     data
   })
 }

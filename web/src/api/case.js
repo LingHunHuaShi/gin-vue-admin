@@ -54,3 +54,11 @@ export const updateCaseByCaseID = (data) => {
     data
   })
 }
+
+export const queryAllCases = (data) => {
+  return service({
+    url: '/case/queryAllCases',
+    method: 'get',
+    data
+  })
+}
