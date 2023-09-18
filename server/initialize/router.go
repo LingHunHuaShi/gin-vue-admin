@@ -71,7 +71,9 @@ func Routers() *gin.Engine {
 		exampleRouter.InitCustomerRouter(PrivateGroup)              // 客户路由
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
 
-		systemRouter.InitAlgorithmRouter(PrivateGroup)
+		systemRouter.InitAlgorithmRouter(PrivateGroup) // 算法相关API路由
+		systemRouter.InitCaseRouter(PrivateGroup)      // 案例路由
+		systemRouter.InitTaskRouter(PrivateGroup)      // 任务路由
 
 	}
 

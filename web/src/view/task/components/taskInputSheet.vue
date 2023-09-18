@@ -2,35 +2,29 @@
   <el-form :model="formData" ref="vForm" :rules="rules" label-position="left" label-width="150px"
            size="medium" @submit.prevent
   >
-    <div class="static-content-item">
-      <div>单列表单</div>
-    </div>
-    <div class="static-content-item">
-      <el-divider direction="horizontal"></el-divider>
-    </div>
-    <el-form-item label="发起人UUID" prop="inputUUID" class="required label-right-align">
-      <el-input v-model="formData.inputUUID" type="text" clearable></el-input>
+    <el-form-item label="发起人UUID" prop="uuid" class="required label-right-align">
+      <el-input v-model="formData.uuid" type="text" clearable :disabled="true"></el-input>
     </el-form-item>
-    <el-form-item label="视频源" prop="inputSource" class="required label-right-align">
-      <el-input v-model="formData.inputSource" type="text" clearable></el-input>
+    <el-form-item label="视频源" prop="source" class="required label-right-align">
+      <el-input v-model="formData.source" type="text" clearable></el-input>
     </el-form-item>
-    <el-form-item label="分辨率" prop="selectResolution" class="label-right-align">
-      <el-select v-model="formData.selectResolution" class="full-width-input" clearable>
-        <el-option v-for="(item, index) in selectResolutionOptions" :key="index" :label="item.label"
+    <el-form-item label="分辨率" prop="resolution" class="label-right-align">
+      <el-select v-model="formData.resolution" class="full-width-input" clearable>
+        <el-option v-for="(item, index) in resolutionOptions" :key="index" :label="item.label"
                    :value="item.value" :disabled="item.disabled"
         ></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="任务容器算法" prop="selectAlgorithm" class="label-right-align">
-      <el-select v-model="formData.selectAlgorithm" class="full-width-input" clearable>
-        <el-option v-for="(item, index) in selectAlgorithmOptions" :key="index" :label="item.label"
+    <el-form-item label="任务容器算法" prop="algorithm" class="label-right-align">
+      <el-select v-model="formData.algorithm" class="full-width-input" clearable>
+        <el-option v-for="(item, index) in algorithmOptions" :key="index" :label="item.label"
                    :value="item.value" :disabled="item.disabled"
         ></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="粒度" prop="radioIntensity" class="label-right-align">
-      <el-radio-group v-model="formData.radioIntensity">
-        <el-radio v-for="(item, index) in radioIntensityOptions" :key="index" :label="item.value"
+    <el-form-item label="粒度" prop="intensity" class="label-right-align">
+      <el-radio-group v-model="formData.intensity">
+        <el-radio v-for="(item, index) in intensityOptions" :key="index" :label="item.value"
                   :disabled="item.disabled" style="{display: inline}"
         >{{ item.label }}
         </el-radio>
@@ -45,9 +39,11 @@ import {
   defineComponent,
   toRefs,
   reactive,
-  getCurrentInstance,
+  getCurrentInstance, onMounted,
 }
   from 'vue'
+import { createTask } from '@/api/task'
+import { getUserInfo } from '@/api/user'
 
 export default defineComponent({
   components: {},
@@ -55,23 +51,23 @@ export default defineComponent({
   setup() {
     const state = reactive({
       formData: {
-        inputUUID: '',
-        inputSource: '',
-        selectResolution: '',
-        selectAlgorithm: '',
-        radioIntensity: null,
+        uuid: '',
+        source: '',
+        resolution: '',
+        algorithm: '',
+        intensity: null,
       },
       rules: {
-        inputUUID: [{
+        uuid: [{
           required: true,
           message: '字段值不可为空',
         }],
-        inputSource: [{
+        source: [{
           required: true,
           message: '字段值不可为空',
         }],
       },
-      selectResolutionOptions: [{
+      resolutionOptions: [{
         'label': '360P',
         'value': 1,
       }, {
@@ -87,7 +83,7 @@ export default defineComponent({
         'value': 5,
         'label': '1080P',
       }],
-      selectAlgorithmOptions: [{
+      algorithmOptions: [{
         'label': 'select 1',
         'value': 1,
       }, {
@@ -97,7 +93,7 @@ export default defineComponent({
         'label': 'select 3',
         'value': 3,
       }],
-      radioIntensityOptions: [{
+      intensityOptions: [{
         'label': '粗',
         'value': 1,
       }, {
@@ -108,20 +104,27 @@ export default defineComponent({
         'value': 3,
       }],
     })
+    const setCurrentUuid = async() => {
+      await getUserInfo().then((result) => {
+        state.formData.uuid = result.data.userInfo.uuid
+      })
+    }
+    onMounted(() => {
+      setCurrentUuid()
+    })
+
     const instance = getCurrentInstance()
     const submitForm = () => {
       instance.ctx.$refs['vForm'].validate(valid => {
         if (!valid) return
-        //TODO: 提交表单
+        // TODO: 提交表单
+        createTask(state.formData)
       })
     }
     const resetForm = () => {
       instance.ctx.$refs['vForm'].resetFields()
     }
-    const expose = { ...toRefs(state), submitForm, resetForm }
-    defineExpose(
-      expose
-    )
+
     return {
       ...toRefs(state),
       submitForm,

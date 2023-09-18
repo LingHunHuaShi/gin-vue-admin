@@ -47,3 +47,12 @@ export const updateAlgorithm = (data) => {
   })
 }
 
+// QueryAllAlgorithm  查询全部算法信息
+// @return algorithms []system.SysAlgorithm 查找到的全部算法信息，如果没有算法则返回空切片
+// @return err error 查找操作的错误，如果查找失败则返回错误信息，否则为nil
+export const queryAllAlgorithm = (data) => {
+  return service({
+    url: '/algorithm/queryAllAlgorithm',
+    method: 'get',
+  })
+}

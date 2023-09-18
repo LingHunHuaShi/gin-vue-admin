@@ -2,15 +2,32 @@
 // import { createCase } from '@/api/case'
 import { deleteCase } from '@/api/case'
 import { ref } from 'vue'
+import TaskInputSheet from './components/taskInputSheet.vue'
 
 const taskData = ref([])
+const taskDialogVisible = ref(false)
+const taskTitle = ref('新增任务')
+const taskRef = ref(null)
+
+const showInputDialog = () => {
+  taskDialogVisible.value = true
+}
+
+const closeDialog = () => {
+  taskRef.value.resetForm()
+  taskDialogVisible.value = false
+}
+
+const submitDialog = () => {
+  taskRef.value.submitForm()
+}
 </script>
 
 <template>
   <div class="case">
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus">新增任务</el-button>
+        <el-button type="primary" icon="plus" @click="showInputDialog">新增任务</el-button>
       </div>
       <el-table
         :data="taskData"
@@ -44,6 +61,15 @@ const taskData = ref([])
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog v-model="taskDialogVisible" :title="taskTitle">
+      <task-input-sheet ref="taskRef" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="submitDialog">确 定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

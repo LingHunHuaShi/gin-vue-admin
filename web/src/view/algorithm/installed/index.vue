@@ -1,7 +1,9 @@
 <script setup>
-import { updateAlgorithm } from '@/api/algorithm'
-import { computed, reactive, ref } from 'vue'
+import { queryAllAlgorithm, updateAlgorithm } from '@/api/algorithm'
+import { computed, onMounted, reactive, ref } from 'vue'
 import detail from '../detail.vue'
+
+const installed = ref([])
 
 // const installed = reactive([{
 //   name: 'Yolo V5 Lite-g',
@@ -18,7 +20,16 @@ import detail from '../detail.vue'
 //   stream_number: 1,
 // }])
 
-const installed = reactive({})
+const getInstalledAlgorithm = async() => {
+  await queryAllAlgorithm().then((result) => {
+    installed.value = result.data
+    console.log(result)
+  })
+}
+
+onMounted(() => {
+  getInstalledAlgorithm()
+})
 
 const usedNPUCore = computed(() => {
   let totalCore = 0
@@ -38,7 +49,6 @@ const testAlgorithm = {
   MD5: 'None'
 }
 
-const apiTest = updateAlgorithm(testAlgorithm)
 
 const dialogVisible = ref(false)
 </script>
@@ -57,7 +67,6 @@ const dialogVisible = ref(false)
           <div slot="header">
             <span>核心使用情况</span>
             <br>
-            <span>apiTest: {{ apiTest }}</span>
             <br>
           </div>
           <div class="content-box">
@@ -77,10 +86,10 @@ const dialogVisible = ref(false)
       <el-col v-for="algorithm in installed" :key="algorithm" class="algorithm-col" :span="8">
         <el-card class="installed-card card">
           <div slot="header">
-            <span class="title algorithm-title">{{ algorithm.name }}</span>
+            <span class="title algorithm-title">{{ algorithm.algorithmName }}</span>
           </div>
           <div class="content-box algorithm-text">
-            <span>CPU占用率：{{ algorithm.CPU_rate }}</span>
+            <span>算法版本：{{ algorithm.algorithmVersion }}</span>
             <br>
             <span>NPU占用率：{{ algorithm.NPU_rate }}</span>
             <br>

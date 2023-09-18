@@ -7,6 +7,7 @@ import CaseInputSheet from '@/view/case/components/caseInputSheet.vue'
 const caseData = ref([])
 const caseDialogVisible = ref(false)
 const dialogTitle = ref('新增案例')
+const caseRef = ref(null)
 
 const showInputDialog = () => {
   caseDialogVisible.value = true
@@ -14,6 +15,10 @@ const showInputDialog = () => {
 
 const closeDialog = () => {
   caseDialogVisible.value = false
+}
+
+const submitDialog = () => {
+  caseRef.value.submitForm()
 }
 </script>
 
@@ -54,15 +59,15 @@ const closeDialog = () => {
         </el-table-column>
       </el-table>
     </div>
-<!--    <el-dialog v-model="caseDialogVisible" :title="dialogTitle">-->
-
-<!--      <template #footer>-->
-<!--        <div class="dialog-footer">-->
-<!--          <el-button @click="closeDialog">取 消</el-button>-->
-<!--          <el-button type="primary">确 定</el-button>-->
-<!--        </div>-->
-<!--      </template>-->
-<!--    </el-dialog>-->
+    <el-dialog v-model="caseDialogVisible" :title="dialogTitle">
+      <case-input-sheet ref="caseRef" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="submitDialog">确 定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
