@@ -7,7 +7,7 @@ aliyun-oss:
   base-path: yourBasePath
 autocode:
   transfer-restart: true
-  root: /media/huashi/Data/Coding/Web/gin-vue-admin
+  root: /home/azure/arm/web/gin-vue-admin
   server: /server
   server-api: /api/v1/%s
   server-plug: /plugin/%s
@@ -85,7 +85,7 @@ hua-wei-obs:
   access-key: you-access-key
   secret-key: you-secret-key
 jwt:
-  signing-key: ca789f58-5007-4909-a019-a81309b56542
+  signing-key: 9243b64f-94ca-4d99-b045-bc612a426bb0
   expires-time: 7d
   buffer-time: 1d
   issuer: qmPlus
@@ -161,7 +161,7 @@ redis:
   addr: 127.0.0.1:6379
   password: ""
 sqlite:
-  path: /home/huashi/gva-database/
+  path: /home/azure/arm/web/gin-vue-admin/server
   port: ""
   config: ""
   db-name: gva
