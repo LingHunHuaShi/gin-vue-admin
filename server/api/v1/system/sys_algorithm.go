@@ -1,11 +1,13 @@
 package system
 
 import (
+	"encoding/json"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type AlgorithmApi struct{}
@@ -101,4 +103,37 @@ func (s *AlgorithmApi) QueryAllAlgorithm(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(algos, "查询成功!", c)
+}
+
+// GetAlgorithms  获取云端的算法
+func (s *AlgorithmApi) GetAlgorithms(c *gin.Context) {
+	//调用云端Api
+	resp, err := http.Get("http://...")
+	if err != nil {
+		global.GVA_LOG.Error("调用云端 API 失败!", zap.Error(err))
+		response.FailWithMessage("调用云端 API 失败: "+err.Error(), c)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		global.GVA_LOG.Error("云端 API 响应状态码不为 200")
+		response.FailWithMessage("云端 API 响应状态码不为 200", c)
+		return
+	}
+
+	var algorithms []system.SysAlgorithm
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(&algorithms); err != nil {
+		global.GVA_LOG.Error("解码云端 API 响应失败!", zap.Error(err))
+		response.FailWithMessage("解码云端 API 响应失败: "+err.Error(), c)
+		return
+	}
+
+	if err := algorithmService.GetAlgorithms(algorithms); err != nil {
+		global.GVA_LOG.Error("插入数据到数据库失败!", zap.Error(err))
+		response.FailWithMessage("插入数据到数据库失败: "+err.Error(), c)
+		return
+	}
+	response.OkWithMessage("成功云端算法获取!", c)
 }
