@@ -55,9 +55,9 @@ export const updateTaskByTaskID = (data) => {
   })
 }
 
-export const queryAllTasks = (data) => {
+export const queryOngoingTask = (data) => {
   return service({
-    url: '/task/queryAllTasks',
+    url: '/task/queryOngoingTask',
     method: 'get',
     data
   })

@@ -1,29 +1,14 @@
 <script setup>
-import { queryAllAlgorithm, updateAlgorithm } from '@/api/algorithm'
+
 import { computed, onMounted, reactive, ref } from 'vue'
 import detail from '../detail.vue'
+import { queryOngoingTask } from '@/api/task'
 
 const installed = ref([])
 
-// const installed = reactive([{
-//   name: 'Yolo V5 Lite-g',
-//   CPU_rate: '5%',
-//   NPU_rate: '37%',
-//   run_time: '6:35:09',
-//   stream_number: 1,
-// },
-// {
-//   name: 'Yolo V5 Lite-g',
-//   CPU_rate: '5%',
-//   NPU_rate: '37%',
-//   run_time: '6:35:09',
-//   stream_number: 1,
-// }])
-
 const getInstalledAlgorithm = async() => {
-  await queryAllAlgorithm().then((result) => {
+  await queryOngoingTask().then((result) => {
     installed.value = result.data
-    console.log(result)
   })
 }
 
@@ -38,16 +23,6 @@ const usedNPUCore = computed(() => {
   }
   return totalCore
 })
-
-const testAlgorithm = {
-  algorithmID: 1,
-  algorithmName: 'test',
-  algorithmVersion: '1.0',
-  description: 'None',
-  size: 190.8,
-  downloadLink: 'None',
-  MD5: 'None'
-}
 
 
 const dialogVisible = ref(false)
@@ -86,10 +61,10 @@ const dialogVisible = ref(false)
       <el-col v-for="algorithm in installed" :key="algorithm" class="algorithm-col" :span="8">
         <el-card class="installed-card card">
           <div slot="header">
-            <span class="title algorithm-title">{{ algorithm.algorithmName }}</span>
+            <span class="title algorithm-title">任务{{ algorithm.taskID }}</span>
           </div>
           <div class="content-box algorithm-text">
-            <span>算法版本：{{ algorithm.algorithmVersion }}</span>
+            <span>算法名称：{{ algorithm.algorithmVersion }}</span>
             <br>
             <span>NPU占用率：{{ algorithm.NPU_rate }}</span>
             <br>

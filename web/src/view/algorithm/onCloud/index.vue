@@ -1,68 +1,104 @@
-<script>
+<script setup>
+import { onMounted, ref } from 'vue'
+import { queryAllAlgorithm } from '@/api/algorithm'
 
-export default {
-  data() {
-    return {
-      cloud: [ // 在云端可部署的算法
-        {
-          name: 'Yolo V8',
-          introduction: 'Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for ' +
-            'Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.'
-        },
-        {
-          name: 'Yolo V8',
-          introduction: 'Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for ' +
-            'Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.'
-        },
-        {
-          name: 'Yolo V8',
-          introduction: 'Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for ' +
-            'Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.'
-        },
-        {
-          name: 'Yolo V8',
-          introduction: 'Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for ' +
-            'Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.Introduction for Yolo V8.'
-        }
-      ],
-      dialogFormVisible: false,
-      formLabelWidth: '120px',
-      newAlgorithm: {
-        VideoAddress: ''
-      }
-    }
-  }
+const dialogVisible = ref(false)
+
+const cloud = ref([
+  {
+    algorithmID: '1',
+    algorithmName: 'YOLO v5 Lite',
+    algorithmVersion: 'V1.0',
+    description: 'YOLO v5 lite版本',
+    downloadLink: 'www.baidu.com',
+    size: '16.5MB',
+    MD5: 'Temporarily None',
+    updateDate: '2023-9-1',
+  },
+  {
+    algorithmID: '2',
+    algorithmName: 'YOLO v5',
+    algorithmVersion: 'V1.3',
+    description: 'YOLO v5',
+    downloadLink: 'www.bing.com',
+    size: '27.9MB',
+    MD5: 'Temporarily None',
+    updateDate: '2023-9-2',
+  },
+  {
+    algorithmID: '3',
+    algorithmName: 'YOLO v8',
+    algorithmVersion: 'V1.2',
+    description: 'YOLO v8',
+    downloadLink: 'www.google.com',
+    size: '23.5MB',
+    MD5: 'Temporarily None',
+    updateDate: '2023-9-3',
+  },
+])
+
+// TODO: 将下面的函数改为从服务器获取云端算法列表
+// const getOnCloudAlgorithms = async() => {
+//   await queryAllAlgorithm().then((result) => {
+//     cloud.value = result.data
+//   })
+// }
+
+const downloadAlgorithm = () => {
+  // TODO:download algorithm here
+  dialogVisible.value = false
 }
+
+onMounted(() => {
+  // getOnCloudAlgorithms()
+})
+
 </script>
 
 <template>
   <div class="algorithm-container">
-    <el-dialog v-model="dialogFormVisible" title="基础配置">
-      <el-form :model="newAlgorithm">
-        <el-form-item label="视频流地址" :label-width="formLabelWidth">
-          <el-input v-model="newAlgorithm.VideoAddress" autocomplete="off" type="url" placeholder="http://example.com" pattern="http://.*" size="30" required />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer align-right">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确定部署</el-button>
-      </div>
+    <el-dialog
+        v-model="dialogVisible"
+        title="Tips"
+        width="30%"
+    >
+      <span>确定要下载这个算法模型吗？</span>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="downloadAlgorithm">
+          确定
+        </el-button>
+      </span>
+      </template>
     </el-dialog>
     <el-row class="algorithm-row">
-      <h4 class="card-title">云端算法</h4>
+      <span class="card-title">云端算法</span>
       <el-divider></el-divider>
       <el-col v-for="algorithm in cloud" :key="algorithm" class="algorithm-col" :span="8">
         <el-card class="cloud-card card">
           <div slot="header">
-            <span class="title">{{ algorithm.name }}</span>
+            <span class="title">{{ algorithm.algorithmName }}</span>
           </div>
           <div class="content-box algorithm-text">
+            <span class="algorithm-version">
+              算法版本：{{ algorithm.algorithmVersion }}
+            </span>
+            <br>
+            <span class="algorithm-size">
+              模型体积：{{ algorithm.size }}
+            </span>
+            <br>
             <span class="algorithm-introduction">
-              {{ algorithm.introduction }}
+              算法描述：{{ algorithm.description }}
+            </span>
+            <br>
+            <span class="algorithm-upedateDate">
+              更新日期：{{ algorithm.updateDate }}
             </span>
             <br>
             <div class="align-right">
-              <el-button type="primary" class="el-button" @click="dialogFormVisible = true">点击部署</el-button>
+              <el-button type="primary" class="el-button" @click="dialogVisible = true">点击下载到本地</el-button>
             </div>
           </div>
         </el-card>
@@ -90,5 +126,8 @@ export default {
 .card {
   margin-right: 20px;
   margin-bottom: 20px;
+  &-title {
+    font-size: 40px;
+  }
 }
 </style>

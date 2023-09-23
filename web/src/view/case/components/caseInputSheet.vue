@@ -124,6 +124,7 @@ export default defineComponent({
       submitForm,
       resetForm,
       testFunc,
+      setCurrentUser,
     }
   },
 })

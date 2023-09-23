@@ -1,7 +1,7 @@
 <script setup>
 // import { createCase } from '@/api/case'
-import { deleteCase } from '@/api/case'
-import { ref } from 'vue'
+import { deleteCase, queryAllCases } from '@/api/case'
+import { onMounted, ref } from 'vue'
 import CaseInputSheet from '@/view/case/components/caseInputSheet.vue'
 
 const caseData = ref([])
@@ -11,6 +11,7 @@ const caseRef = ref(null)
 
 const showInputDialog = () => {
   caseDialogVisible.value = true
+  caseRef.setCurrentUser()
 }
 
 const closeDialog = () => {
@@ -19,7 +20,20 @@ const closeDialog = () => {
 
 const submitDialog = () => {
   caseRef.value.submitForm()
+  caseDialogVisible.value = false
 }
+
+const getCaseData = async() => {
+  await queryAllCases().then((result) => {npm
+    caseData.value = result.data
+    console.log(caseData)
+  })
+}
+
+onMounted(() => {
+  getCaseData()
+})
+
 </script>
 
 <template>
