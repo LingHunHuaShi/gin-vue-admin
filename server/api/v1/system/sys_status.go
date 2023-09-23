@@ -1,13 +1,18 @@
 package system
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
 )
 
 type SysStatusApi struct{}
 
+/*
 func (Api *SysStatusApi) UploadSystemStatus(c *gin.Context) {
 	var status system.SysStatus
 	err := c.ShouldBindJSON(&status)
@@ -22,9 +27,10 @@ func (Api *SysStatusApi) UploadSystemStatus(c *gin.Context) {
 	}
 	response.OkWithMessage("系统数据成功上传", c)
 }
+*/
 
 // API提交数据给云端
-/*
+
 func (Api *SysStatusApi) SendSystemStatusViaAPI(c *gin.Context) {
 	var Status system.SysStatus
 	err := c.ShouldBindJSON(&Status)
@@ -61,4 +67,3 @@ func (Api *SysStatusApi) SendSystemStatusViaAPI(c *gin.Context) {
 		c.JSON(res.StatusCode, gin.H{"error": "Request failed"})
 	}
 }
-*/
