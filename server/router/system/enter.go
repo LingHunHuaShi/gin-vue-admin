@@ -19,4 +19,5 @@ type RouterGroup struct {
 	AlgorithmRouter
 	TaskRouter
 	CaseRouter
+	StatusRouter
 }

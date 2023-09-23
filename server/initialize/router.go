@@ -74,7 +74,7 @@ func Routers() *gin.Engine {
 		systemRouter.InitAlgorithmRouter(PrivateGroup) // 算法相关API路由
 		systemRouter.InitCaseRouter(PrivateGroup)      // 案例路由
 		systemRouter.InitTaskRouter(PrivateGroup)      // 任务路由
-
+		systemRouter.InitSysStatusRouter(PrivateGroup) //系统状态路由
 	}
 
 	global.GVA_LOG.Info("router register success")
