@@ -12,6 +12,6 @@ func (r *StatusRouter) InitSysStatusRouter(Router *gin.RouterGroup) {
 	statusRouter := Router.Group("status").Use(middleware.OperationRecord())
 	statusApi := v1.ApiGroupApp.SystemApiGroup.SysStatusApi
 	{
-		statusRouter.PUT("uploadSystemStatus", statusApi.UploadSystemStatus)
+		statusRouter.PUT("uploadSystemStatus", statusApi.SendSystemStatusViaAPI)
 	}
 }
