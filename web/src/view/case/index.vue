@@ -24,9 +24,14 @@ const submitDialog = () => {
 }
 
 const getCaseData = async() => {
-  await queryAllCases().then((result) => {npm
+  await queryAllCases().then((result) => {
+    result.data.map(item => ({
+      caseID: item.caseID,
+      uuid: item.uuid,
+      CreatedAt: item.CreatedAt.substring(1, 10) + ' ' + item.CreatedAt.substring(11, 19),
+    }))
     caseData.value = result.data
-    console.log(caseData)
+    console.log('caseData:', result.data)
   })
 }
 
@@ -50,7 +55,7 @@ onMounted(() => {
         <el-table-column label="案件ID" min-width="180" prop="caseID"/>
         <el-table-column align="left" label="发起人UUID" min-width="180" prop="uuid"/>
         <el-table-column align="left" label="案例标题" min-width="180" prop="title"/>
-        <el-table-column align="left" label="提交时间" min-width="180" prop="submitDate"/>
+        <el-table-column align="left" label="提交时间" min-width="180" prop="CreatedAt"/>
         <el-table-column align="left" label="紧急等级" min-width="180" prop="severity"/>
         <el-table-column align="left" label="案例状态" min-width="180" prop="status"/>
         <el-table-column align="left" label="完结时间" min-width="180" prop="dateClosed"/>

@@ -44,6 +44,9 @@ import {
   from 'vue'
 import { createTask } from '@/api/task'
 import { getUserInfo } from '@/api/user'
+import { queryAllAlgorithm } from '@/api/algorithm'
+import async from 'async'
+import { ElMessage } from 'element-plus'
 
 export default defineComponent({
   components: {},
@@ -83,16 +86,7 @@ export default defineComponent({
         'value': 5,
         'label': '1080P',
       }],
-      algorithmOptions: [{
-        'label': 'select 1',
-        'value': 1,
-      }, {
-        'label': 'select 2',
-        'value': 2,
-      }, {
-        'label': 'select 3',
-        'value': 3,
-      }],
+      algorithmOptions: [],
       intensityOptions: [{
         'label': '粗',
         'value': 1,
@@ -109,16 +103,37 @@ export default defineComponent({
         state.formData.uuid = result.data.userInfo.uuid
       })
     }
+    const getLocalAlgorithm = async() => {
+      await queryAllAlgorithm().then((result) => {
+        state.algorithmOptions = result.data.map(item => ({
+          label: item.algorithmName,
+          value: item.algorithmID,
+        }))
+        console.log('options:' + state.algorithmOptions)
+      })
+    }
     onMounted(() => {
       setCurrentUuid()
+      getLocalAlgorithm()
+      console.log('before:' + state.formData)
     })
 
     const instance = getCurrentInstance()
     const submitForm = () => {
-      instance.ctx.$refs['vForm'].validate(valid => {
+      instance.ctx.$refs['vForm'].validate(async(valid) => {
         if (!valid) return
         // TODO: 提交表单
-        createTask(state.formData)
+        console.log('formData:' + state.formData.source)
+        await createTask(state.formData).then(res => {
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '添加成功！'
+            })
+          }
+        }).catch(err => {
+          console.error('Error:', err)
+        })
       })
     }
     const resetForm = () => {
