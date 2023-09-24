@@ -77,8 +77,8 @@ func (s *AlgorithmApi) FindAlgorithmById(c *gin.Context) {
 	algo, err := algorithmService.FindAlgorithmById(uint(algorithmID))
 
 	if err != nil {
-		global.GVA_LOG.Error("查找失败!", zap.Error(err))
-		response.FailWithMessage("查找失败!"+err.Error(), c)
+		global.GVA_LOG.Error("查找失败!2", zap.Error(err))
+		response.FailWithMessage("查找失败!3"+err.Error(), c)
 		return
 	}
 	response.OkWithDetailed(algo, "查找成功!", c)
