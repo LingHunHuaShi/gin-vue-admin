@@ -1,48 +1,54 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { queryAllAlgorithm } from '@/api/algorithm'
+import axios from 'axios'
+
+// 拉取算法的地址
+const getAlgoAddress = 'http://192.168.6.132:8080/algorithm/algorithm/list'
 
 const dialogVisible = ref(false)
 
-const cloud = ref([
-  {
-    algorithmID: '1',
-    algorithmName: 'YOLO v5 Lite',
-    algorithmVersion: 'V1.0',
-    description: 'YOLO v5 lite版本',
-    downloadLink: 'www.baidu.com',
-    size: '16.5MB',
-    MD5: 'Temporarily None',
-    updateDate: '2023-9-1',
-  },
-  {
-    algorithmID: '2',
-    algorithmName: 'YOLO v5',
-    algorithmVersion: 'V1.3',
-    description: 'YOLO v5',
-    downloadLink: 'www.bing.com',
-    size: '27.9MB',
-    MD5: 'Temporarily None',
-    updateDate: '2023-9-2',
-  },
-  {
-    algorithmID: '3',
-    algorithmName: 'YOLO v8',
-    algorithmVersion: 'V1.2',
-    description: 'YOLO v8',
-    downloadLink: 'www.google.com',
-    size: '23.5MB',
-    MD5: 'Temporarily None',
-    updateDate: '2023-9-3',
-  },
-])
+const cloud = ref([])
+
+// const cloud = ref([
+//   {
+//     algorithmID: '1',
+//     algorithmName: 'YOLO v5 Lite',
+//     algorithmVersion: 'V1.0',
+//     description: 'YOLO v5 lite版本',
+//     downloadLink: 'www.baidu.com',
+//     size: '16.5MB',
+//     MD5: 'Temporarily None',
+//     updateDate: '2023-9-1',
+//   },
+//   {
+//     algorithmID: '2',
+//     algorithmName: 'YOLO v5',
+//     algorithmVersion: 'V1.3',
+//     description: 'YOLO v5',
+//     downloadLink: 'www.bing.com',
+//     size: '27.9MB',
+//     MD5: 'Temporarily None',
+//     updateDate: '2023-9-2',
+//   },
+//   {
+//     algorithmID: '3',
+//     algorithmName: 'YOLO v8',
+//     algorithmVersion: 'V1.2',
+//     description: 'YOLO v8',
+//     downloadLink: 'www.google.com',
+//     size: '23.5MB',
+//     MD5: 'Temporarily None',
+//     updateDate: '2023-9-3',
+//   },
+// ])
 
 // TODO: 将下面的函数改为从服务器获取云端算法列表
-// const getOnCloudAlgorithms = async() => {
-//   await queryAllAlgorithm().then((result) => {
-//     cloud.value = result.data
-//   })
-// }
+const getOnCloudAlgorithms = async() => {
+  const res = await axios.get(getAlgoAddress)
+  cloud.value = res.data.rows
+  console.log(res.data)
+}
 
 const downloadAlgorithm = () => {
   // TODO:download algorithm here
@@ -50,7 +56,7 @@ const downloadAlgorithm = () => {
 }
 
 onMounted(() => {
-  // getOnCloudAlgorithms()
+  getOnCloudAlgorithms()
 })
 
 </script>
@@ -86,15 +92,15 @@ onMounted(() => {
             </span>
             <br>
             <span class="algorithm-size">
-              模型体积：{{ algorithm.size }}
+              模型体积：{{ algorithm.algorithmSize }}
             </span>
             <br>
             <span class="algorithm-introduction">
-              算法描述：{{ algorithm.description }}
+              算法描述：{{ algorithm.algorithmDescription }}
             </span>
             <br>
             <span class="algorithm-upedateDate">
-              更新日期：{{ algorithm.updateDate }}
+              更新日期：{{ algorithm.updateTime }}
             </span>
             <br>
             <div class="align-right">
