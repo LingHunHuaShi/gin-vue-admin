@@ -7,6 +7,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -66,6 +67,7 @@ func (s *AlgorithmApi) FindAlgorithmById(c *gin.Context) {
 		algo, err := algorithmService.FindAlgorithmById(algorithm.AlgorithmID)
 	*/
 	algorithmIDStr := c.Param("algorithmID")
+	log.Println(algorithmIDStr)
 	algorithmID, err := strconv.ParseUint(algorithmIDStr, 10, 64)
 	if err != nil {
 		response.FailWithMessage("算法ID参数错误!", c)
