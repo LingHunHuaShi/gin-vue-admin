@@ -5,11 +5,10 @@ import { ElMessage } from 'element-plus'
 
 const algorithm = reactive({
   algorithmName: '',
-  algorithmVersion: 1.3,
+  algorithmVersion: 'V1.4',
   description: '',
   size: 0,
-  downloadLink: '',
-  MD5: ''
+  MD5: '',
 })
 
 const createNewAlgorithm = async() => {
@@ -35,9 +34,6 @@ const createNewAlgorithm = async() => {
       </el-form-item>
       <el-form-item label="算法描述">
         <el-input v-model="algorithm.description" autosize type="textarea" />
-      </el-form-item>
-      <el-form-item label="下载链接">
-        <el-input v-model="algorithm.downloadLink" />
       </el-form-item>
       <el-form-item label="MD5">
         <el-input v-model="algorithm.MD5" />

@@ -109,6 +109,7 @@ export default defineComponent({
       instance.ctx.$refs['vForm'].validate(valid => {
         if (!valid) return
         // TODO: 提交表单
+        console.log(state.formData.uuid)
         createCase(state.formData)
       })
     }

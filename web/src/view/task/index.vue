@@ -1,8 +1,11 @@
 <script setup>
 // import { createCase } from '@/api/case'
-import { deleteCase } from '@/api/case'
-import { ref } from 'vue'
+import { deleteCase, findCaseByCaseID } from '@/api/case'
+import { onMounted, ref } from 'vue'
 import TaskInputSheet from './components/taskInputSheet.vue'
+import { queryOngoingTask } from '@/api/task'
+import { findAlgorithmById } from '@/api/algorithm'
+import { ElMessage } from 'element-plus'
 
 const taskData = ref([])
 const taskDialogVisible = ref(false)
@@ -21,6 +24,31 @@ const closeDialog = () => {
 const submitDialog = () => {
   taskRef.value.submitForm()
 }
+
+const getAlgorithmNameById = async(id) => {
+  console.log({ algorithmID: id })
+  const result = await findAlgorithmById('asdfasdf')
+  // console.log(result)
+}
+
+const getTaskList = async() => {
+  const result = await queryOngoingTask()
+  // console.log('result:', result.data)
+  taskData.value = result.data.map(item => ({
+    taskID: item.taskID,
+    uuid: item.uuid,
+    source: item.videoSource,
+    CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
+    resolution: item.resolution,
+    algorithmName: getAlgorithmNameById(item.algorithmId)
+  }))
+  // console.log('taskData:', taskData.value)
+}
+
+onMounted(() => {
+  getTaskList()
+  // console.log('test get name by id:', getAlgorithmNameById())
+})
 </script>
 
 <template>
@@ -37,9 +65,9 @@ const submitDialog = () => {
         <el-table-column label="任务ID" min-width="180" prop="taskID" />
         <el-table-column align="left" label="发起人UUID" min-width="180" prop="uuid" />
         <el-table-column align="left" label="视频源" min-width="180" prop="videoSource" />
-        <el-table-column align="left" label="创建时间" min-width="180" prop="creationDate" />
-        <el-table-column align="left" label="创建时间" min-width="180" prop="resolution" />
-        <el-table-column align="left" label="任务容器算法ID" min-width="180" prop="algorithmId" />
+        <el-table-column align="left" label="创建时间" min-width="180" prop="CreatedAt" />
+        <el-table-column align="left" label="分辨率" min-width="180" prop="resolution" />
+        <el-table-column align="left" label="任务容器算法ID" min-width="180" prop="algorithmName" />
         <el-table-column align="left" label="任务粒度" min-width="180" prop="intensity" />
         <el-table-column align="left" lebal="任务状态" min-width="180" prop="status" />
         <el-table-column align="left" label="操作" width="460">
