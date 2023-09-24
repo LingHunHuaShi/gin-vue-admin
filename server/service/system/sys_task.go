@@ -52,7 +52,7 @@ func (t *TaskService) FindTaskByUser(user system.SysUser) (taskInter *system.Sys
 // 返回值 查找到的任务对象指针 错误信息
 func (t *TaskService) FindTaskByTaskID(taskID uint) (taskInter *system.SysTask, err error) {
 	var task system.SysTask
-	err = global.GVA_DB.Where("TaskID = ?", taskID).First(&task).Error
+	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
 	if err != nil {
 		return &task, errors.New("任务不存在")
 	}
@@ -64,7 +64,7 @@ func (t *TaskService) FindTaskByTaskID(taskID uint) (taskInter *system.SysTask, 
 // 返回值 错误信息
 func (t *TaskService) DeleteTask(taskID uint) (err error) {
 	var task system.SysTask
-	err = global.GVA_DB.Where("TaskID = ?", taskID).Delete(&task).Error
+	err = global.GVA_DB.Where("ID = ?", taskID).Delete(&task).Error
 	if err != nil {
 		return errors.New("任务不存在")
 	}
@@ -78,7 +78,7 @@ func (t *TaskService) UpdateTaskByTaskID(taskID uint, newTask system.SysTask) (u
 	var task system.SysTask
 
 	// 查询任务是否存在
-	err = global.GVA_DB.Where("TaskID = ?", taskID).First(&task).Error
+	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
 	if err != nil {
 		return &task, errors.New("任务不存在")
 	}

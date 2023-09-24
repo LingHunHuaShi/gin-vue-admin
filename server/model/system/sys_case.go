@@ -8,7 +8,7 @@ import (
 
 type SysCase struct {
 	global.GVA_MODEL
-	CaseID     uint      `json:"caseID" gorm:"default:0;primary_key;auto_increment;index;comment:案例ID"`
+	// CaseID     uint      `json:"caseID" gorm:"default:0;primary_key;auto_increment;index;comment:案例ID"`
 	UUID       uuid.UUID `json:"uuid" gorm:"comment:案例发起者UUID"`
 	Title      string    `json:"title" gorm:"comment:案例标题"`
 	Content    string    `json:"content" gorm:"comment:案例内容"`

@@ -40,7 +40,7 @@ func (algorithmService *AlgorithmService) CreateAlgorithm(algorithm system.SysAl
 // @return err error 删除操作的错误，如果删除失败则返回错误信息，否则为nil
 func (algorithmService *AlgorithmService) DeleteAlgorithm(algorithmID uint) (err error) {
 	var algorithm system.SysAlgorithm
-	err = global.GVA_DB.Where("AlgorithmID = ?", algorithmID).Delete(&algorithm).Error
+	err = global.GVA_DB.Where("ID = ?", algorithmID).Delete(&algorithm).Error
 	if err != nil {
 		return errors.New("删除失败")
 	}
@@ -53,7 +53,7 @@ func (algorithmService *AlgorithmService) DeleteAlgorithm(algorithmID uint) (err
 // @return err error 查找操作的错误，如果算法不存在或查找失败则返回错误信息，否则为nil
 func (algorithmService *AlgorithmService) FindAlgorithmById(algorithmID uint) (algorithmInter *system.SysAlgorithm, err error) {
 	var algorithm system.SysAlgorithm
-	err = global.GVA_DB.Where("AlgorithmID = ?", algorithmID).First(&algorithm).Error
+	err = global.GVA_DB.Where("ID = ?", algorithmID).First(&algorithm).Error
 	if err != nil {
 		return &algorithm, errors.New("算法不存在")
 	}
@@ -69,7 +69,7 @@ func (algorithmService *AlgorithmService) UpdateAlgorithm(algorithmID uint, newA
 	var algorithm system.SysAlgorithm
 
 	// 查找要更新的算法
-	err = global.GVA_DB.Where("AlgorithmID = ?", algorithmID).First(&algorithm).Error
+	err = global.GVA_DB.Where("ID = ?", algorithmID).First(&algorithm).Error
 	if err != nil {
 		return &algorithm, errors.New("算法不存在")
 	}
@@ -99,7 +99,7 @@ func (algorithmService *AlgorithmService) QueryAllAlgorithm() (algorithms []syst
 func (algorithmService *AlgorithmService) GetAlgorithms(algorithms []system.SysAlgorithm) error {
 	for _, algorithm := range algorithms {
 		var tmp system.SysAlgorithm
-		err := global.GVA_DB.Where("AlgorithmID = ?", algorithm.AlgorithmID).First(&tmp)
+		err := global.GVA_DB.Where("ID = ?", algorithm.ID).First(&tmp)
 
 		if err.Error != nil && !errors.Is(err.Error, gorm.ErrRecordNotFound) {
 			return err.Error

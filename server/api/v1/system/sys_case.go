@@ -58,7 +58,7 @@ func (Api *CaseApi) FindCaseByCaseID(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	MyCase, err := caseService.FindCaseByCaseID(Case.CaseID)
+	MyCase, err := caseService.FindCaseByCaseID(Case.ID)
 	if err != nil {
 		global.GVA_LOG.Error("查找失败!", zap.Error(err))
 		response.FailWithMessage("查找失败!"+err.Error(), c)
@@ -77,7 +77,7 @@ func (Api *CaseApi) DeleteCase(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = caseService.DeleteCase(Case.CaseID)
+	err = caseService.DeleteCase(Case.ID)
 	if err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败!"+err.Error(), c)
@@ -96,7 +96,7 @@ func (Api *CaseApi) UpdateCase(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	MyCase, err := caseService.UpdateCaseByCaseID(Case.CaseID, Case)
+	MyCase, err := caseService.UpdateCaseByCaseID(Case.ID, Case)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
 		response.FailWithMessage("更新失败2!", c)

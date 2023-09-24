@@ -51,7 +51,7 @@ func (c *CaseService) FindCaseByUser(user system.SysUser) (caseInter *system.Sys
 // 返回值 查找到的案例对象指针 错误信息
 func (c *CaseService) FindCaseByCaseID(caseID uint) (caseInter *system.SysCase, err error) {
 	var caseObj system.SysCase
-	err = global.GVA_DB.Where("CaseID = ?", caseID).First(&caseObj).Error
+	err = global.GVA_DB.Where("ID = ?", caseID).First(&caseObj).Error
 	if err != nil {
 		return &caseObj, errors.New("案例不存在")
 	}
@@ -63,7 +63,7 @@ func (c *CaseService) FindCaseByCaseID(caseID uint) (caseInter *system.SysCase, 
 // 返回值 错误信息
 func (c *CaseService) DeleteCase(caseID uint) (err error) {
 	var caseObj system.SysCase
-	err = global.GVA_DB.Where("CaseID = ?", caseID).Delete(&caseObj).Error
+	err = global.GVA_DB.Where("ID = ?", caseID).Delete(&caseObj).Error
 	if err != nil {
 		return errors.New("案例不存在")
 	}
@@ -77,7 +77,7 @@ func (c *CaseService) UpdateCaseByCaseID(caseID uint, newCase system.SysCase) (u
 	var caseObj system.SysCase
 
 	// 查询案例是否存在
-	err = global.GVA_DB.Where("CaseID = ?", caseID).First(&caseObj).Error
+	err = global.GVA_DB.Where("ID = ?", caseID).First(&caseObj).Error
 	if err != nil {
 		return &caseObj, errors.New("案例不存在")
 	}

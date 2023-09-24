@@ -59,7 +59,7 @@ func (Api *TaskApi) FindTaskByTaskID(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	task, err := taskService.FindTaskByTaskID(Task.TaskID)
+	task, err := taskService.FindTaskByTaskID(Task.ID)
 	if err != nil {
 		global.GVA_LOG.Error("查找失败!", zap.Error(err))
 		response.FailWithMessage("查找失败!"+err.Error(), c)
@@ -78,7 +78,7 @@ func (Api *TaskApi) DeleteTask(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = taskService.DeleteTask(Task.TaskID)
+	err = taskService.DeleteTask(Task.ID)
 	if err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败!"+err.Error(), c)
@@ -97,7 +97,7 @@ func (Api *TaskApi) UpdateTask(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	newTask, err := taskService.UpdateTaskByTaskID(Task.TaskID, Task)
+	newTask, err := taskService.UpdateTaskByTaskID(Task.ID, Task)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
 		response.FailWithMessage("更新失败2!", c)

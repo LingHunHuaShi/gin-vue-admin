@@ -43,7 +43,7 @@ func (s *AlgorithmApi) DeleteAlgorithm(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = algorithmService.DeleteAlgorithm(algorithm.AlgorithmID)
+	err = algorithmService.DeleteAlgorithm(algorithm.ID)
 	if err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败!"+err.Error(), c)
@@ -96,7 +96,7 @@ func (s *AlgorithmApi) UpdateAlgorithm(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	newAlgo, err := algorithmService.UpdateAlgorithm(algorithm.AlgorithmID, algorithm)
+	newAlgo, err := algorithmService.UpdateAlgorithm(algorithm.ID, algorithm)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2 GVA_LOG!", zap.Error(err))
 		response.FailWithMessage("更新失败2 RESPONSE!", c)
