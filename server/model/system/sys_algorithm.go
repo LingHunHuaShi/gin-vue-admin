@@ -7,7 +7,7 @@ import (
 
 type SysAlgorithm struct {
 	global.GVA_MODEL
-	AlgorithmID      uint      `json:"algorithmID" gorm:"default:0;primaryKey;autoIncrement;index;comment:算法ID"`
+	AlgorithmID      uint      `json:"algorithmID" gorm:"default:0;primary_key;auto_increment;index;comment:算法ID"`
 	AlgorithmName    string    `json:"algorithmName" gorm:"comment:算法名"`
 	AlgorithmVersion string    `json:"algorithmVersion" gorm:"comment:算法版本"`
 	Description      string    `json:"description" gorm:"comment:算法描述"`
