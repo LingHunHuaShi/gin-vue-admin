@@ -7,9 +7,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"log"
 	"net/http"
-	"strconv"
 )
 
 type AlgorithmApi struct{}
@@ -57,24 +55,25 @@ func (s *AlgorithmApi) DeleteAlgorithm(c *gin.Context) {
 // @return algorithmInter *system.SysAlgorithm 查找到的算法信息，如果找到则为非空指针，否则为nil
 // @return err error 查找操作的错误，如果算法不存在或查找失败则返回错误信息，否则为nil
 func (s *AlgorithmApi) FindAlgorithmById(c *gin.Context) {
-	/*
-			var algorithm system.SysAlgorithm
-			err := c.ShouldBindJSON(&algorithm)
-			if err != nil {
-				response.FailWithMessage("查找失败!", c)
-				return
-			}
-		algo, err := algorithmService.FindAlgorithmById(algorithm.AlgorithmID)
-	*/
-	algorithmIDStr := c.Param("algorithmID")
-	log.Println(algorithmIDStr)
-	algorithmID, err := strconv.ParseUint(algorithmIDStr, 10, 64)
+
+	var algorithm system.SysAlgorithm
+	err := c.ShouldBindJSON(&algorithm)
 	if err != nil {
-		response.FailWithMessage("算法ID参数错误!", c)
+		response.FailWithMessage("查找失败!", c)
 		return
 	}
 
-	algo, err := algorithmService.FindAlgorithmById(uint(algorithmID))
+	/*
+		algorithmIDStr := c.Param("algorithmID")
+		log.Println(algorithmIDStr)
+		algorithmID, err := strconv.ParseUint(algorithmIDStr, 10, 64)
+		if err != nil {
+			response.FailWithMessage("算法ID参数错误!", c)
+			return
+		}
+	*/
+
+	algo, err := algorithmService.FindAlgorithmById(algorithm.ID)
 
 	if err != nil {
 		global.GVA_LOG.Error("查找失败!2", zap.Error(err))
