@@ -1,40 +1,66 @@
 <script setup>
 
-import { computed, onMounted, reactive, ref } from 'vue'
-import detail from '../detail.vue'
+import { computed, onMounted, ref } from 'vue'
+// import detail from '../detail.vue'
 import { queryOngoingTask } from '@/api/task'
 import { queryAllAlgorithm } from '@/api/algorithm'
+import TaskInput from './components/taskInput.vue'
 
 const installed = ref([])
+const dialogVisible = ref(false)
+const taskRef = ref(null)
+const currentAlgoName = ref('defaultName')
+const currentAlgoId = ref(-1)
+const propsLoaded = ref(false)
 
 const getInstalledAlgorithm = async() => {
   await queryAllAlgorithm().then((result) => {
     installed.value = result.data
-    console.log(result.data[0].UpdatedAt.toLocaleString())
+    console.log(result.data)
   })
+}
+
+const submitDialog = () => {
+  taskRef.value.submitForm()
+}
+
+const showTaskDialog = (algo) => {
+  currentAlgoName.value = algo.algorithmName
+  currentAlgoId.value = algo.ID
+  propsLoaded.value = true
+  dialogVisible.value = true
+}
+
+const cancelDialog = () => {
+  taskRef.value.resetForm()
+  currentAlgoId.value = null
+  currentAlgoId.value = null
+  dialogVisible.value = false
+  propsLoaded.value = false
 }
 
 onMounted(() => {
   getInstalledAlgorithm()
 })
 
-const usedNPUCore = computed(() => {
-  let totalCore = 0
-  for (let i = 0; i < installed.length; i++) {
-    totalCore += installed[i].stream_number
-  }
-  return totalCore
-})
+// const usedNPUCore = computed(() => {
+//   let totalCore = 0
+//   for (let i = 0; i < installed.length; i++) {
+//     totalCore += installed[i].stream_number
+//   }
+//   return totalCore
+// })
 
-const dialogVisible = ref(false)
 </script>
 
 <template>
   <div class="algorithm-container">
-    <el-dialog v-model="dialogVisible" title="算法配置">
-      <detail />
+    <el-dialog v-if="propsLoaded" v-model="dialogVisible" title="新建任务" >
+<!--      <detail />-->
+      <task-input ref="taskRef" :algo-name="currentAlgoName" :algo-id="currentAlgoId" />
       <div slot="footer" class="dialog-footer align-right">
-        <el-button @click="dialogVisible = false">取消更改</el-button>
+        <el-button type="primary" @click="submitDialog">确 定</el-button>
+        <el-button @click="cancelDialog">取消</el-button>
       </div>
     </el-dialog>
 <!--    <el-row class="algorithm-row">-->
@@ -73,7 +99,7 @@ const dialogVisible = ref(false)
             <br>
             <div class="align-right">
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
-              <el-button type="primary" class="el-button" @click="dialogVisible = true">管理</el-button>
+              <el-button type="primary" class="el-button" @click="showTaskDialog(algorithm)">新建任务</el-button>
             </div>
           </div>
         </el-card>

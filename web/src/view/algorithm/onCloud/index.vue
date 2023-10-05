@@ -4,7 +4,7 @@ import { queryAllAlgorithm } from '@/api/algorithm'
 import axios from 'axios'
 
 // 拉取算法的地址
-const getAlgoAddress = 'http://192.168.6.132:8080/algorithm/algorithm/list'
+const getAlgoAddress = 'http://192.168.108.212:8080/algorithm/algorithm/list'
 
 const dialogVisible = ref(false)
 

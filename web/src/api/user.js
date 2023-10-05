@@ -164,3 +164,11 @@ export const resetPassword = (data) => {
     data: data
   })
 }
+
+export const findNickNameByUuid = (data) => {
+  return service({
+    url: '/user/findNickNameByUuid',
+    method: 'post',
+    data: data
+  })
+}

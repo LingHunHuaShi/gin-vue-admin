@@ -29,7 +29,7 @@ export const deleteAlgorithm = (data) => {
 export const findAlgorithmById = (data) => {
   return service({
     url: '/algorithm/findAlgorithmById',
-    method: 'get',
+    method: 'post',
     data
   })
 }

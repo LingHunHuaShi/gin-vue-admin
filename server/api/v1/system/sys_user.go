@@ -468,20 +468,21 @@ func (b *BaseApi) ResetPassword(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 func (b *BaseApi) FindNickNameByUuid(c *gin.Context) {
-	var Uuid string
+	var idInfo request.GetUserByUuid
 	var User *system.SysUser
-	err := c.ShouldBindJSON(&Uuid)
+
+	err := c.ShouldBindJSON(&idInfo)
 
 	if err != nil {
-		response.FailWithMessage(err.Error(), c)
+		response.FailWithMessage(err.Error()+"000", c)
 		return
 	}
 
-	if len(Uuid) == 0 {
+	if len(idInfo.UUID) == 0 {
 		response.FailWithMessage("uuid为空值", c)
 		return
 	}
-	User, err = userService.FindUserByUuid(Uuid)
+	User, err = userService.FindUserByUuid(idInfo.UUID)
 	if err != nil {
 		global.GVA_LOG.Error("查询失败", zap.Error(err))
 		response.FailWithMessage("查询失败"+err.Error(), c)

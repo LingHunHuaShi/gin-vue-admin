@@ -5,8 +5,8 @@
     <el-form-item label="发起人UUID" prop="uuid" class="required label-right-align">
       <el-input v-model="formData.uuid" type="text" clearable :disabled="true"></el-input>
     </el-form-item>
-    <el-form-item label="视频源" prop="videoSource" class="required label-right-align">
-      <el-input v-model="formData.videoSource" type="text" clearable></el-input>
+    <el-form-item label="视频源" prop="source" class="required label-right-align">
+      <el-input v-model="formData.source" type="text" clearable></el-input>
     </el-form-item>
     <el-form-item label="分辨率" prop="resolution" class="label-right-align">
       <el-select v-model="formData.resolution" class="full-width-input" clearable>
@@ -16,11 +16,7 @@
       </el-select>
     </el-form-item>
     <el-form-item label="任务容器算法" prop="algorithm" class="label-right-align">
-      <el-select v-model="formData.algorithm" class="full-width-input" clearable>
-        <el-option v-for="(item, index) in algorithmOptions" :key="index" :label="item.label"
-                   :value="item.value" :disabled="item.disabled"
-        ></el-option>
-      </el-select>
+      <el-text> {{ algoName }} </el-text>
     </el-form-item>
     <el-form-item label="粒度" prop="intensity" class="label-right-align">
       <el-radio-group v-model="formData.intensity">
@@ -31,7 +27,6 @@
       </el-radio-group>
     </el-form-item>
   </el-form>
-
 </template>
 
 <script>
@@ -39,7 +34,7 @@ import {
   defineComponent,
   toRefs,
   reactive,
-  getCurrentInstance, onMounted,
+  getCurrentInstance, onMounted, ref, watch,
 }
   from 'vue'
 import { createTask } from '@/api/task'
@@ -49,16 +44,31 @@ import async from 'async'
 import { ElMessage } from 'element-plus'
 
 export default defineComponent({
+  name: 'TaskInput',
   components: {},
-  props: {},
-  setup() {
+  props: {
+    algoName: {
+      type: String,
+      required: true,
+      default: 'defaultName',
+    },
+    algoId: {
+      type: Number,
+      required: true,
+      default: -1,
+    },
+  },
+  setup(props) {
+    console.log('props initial:', props)
     const state = reactive({
       formData: {
         uuid: '',
-        videoSource: '',
+        source: '',
         resolution: '',
         algorithm: '',
         intensity: null,
+        algoName: '1111111',
+        algoId: '',
       },
       rules: {
         uuid: [{
@@ -86,7 +96,6 @@ export default defineComponent({
         'value': 5,
         'label': '1080P',
       }],
-      algorithmOptions: [],
       intensityOptions: [{
         'label': '粗',
         'value': 1,
@@ -98,24 +107,14 @@ export default defineComponent({
         'value': 3,
       }],
     })
-    const setCurrentUuid = async() => {
+    const setCurrentUser = async() => {
       await getUserInfo().then((result) => {
         state.formData.uuid = result.data.userInfo.uuid
       })
     }
-    const getLocalAlgorithm = async() => {
-      await queryAllAlgorithm().then((result) => {
-        state.algorithmOptions = result.data.map(item => ({
-          label: item.algorithmName,
-          value: item.algorithmID,
-        }))
-        console.log('options:' + state.algorithmOptions)
-      })
-    }
+
     onMounted(() => {
-      setCurrentUuid()
-      getLocalAlgorithm()
-      console.log('before:' + state.formData)
+      setCurrentUser()
     })
 
     const instance = getCurrentInstance()
@@ -124,7 +123,14 @@ export default defineComponent({
         if (!valid) return
         // TODO: 提交表单
         console.log('formData:' + state.formData.source)
-        await createTask(state.formData).then(res => {
+        const taskData = {
+          uuid: state.formData.uuid,
+          source: state.formData.source,
+          resolution: state.formData.resolution,
+          algorithm: state.formData.algoId,
+          intensity: state.formData.intensity,
+        }
+        await createTask(taskData).then(res => {
           if (res.code === 0) {
             ElMessage({
               type: 'success',
