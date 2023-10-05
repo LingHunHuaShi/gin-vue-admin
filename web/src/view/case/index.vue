@@ -3,6 +3,7 @@
 import { deleteCase, queryAllCases } from '@/api/case'
 import { onMounted, ref } from 'vue'
 import CaseInputSheet from '@/view/case/components/caseInputSheet.vue'
+import { getUserInfo, getUserList } from '@/api/user'
 
 const caseData = ref([])
 const caseDialogVisible = ref(false)
@@ -25,14 +26,47 @@ const submitDialog = () => {
 
 const getCaseData = async() => {
   await queryAllCases().then((result) => {
-    result.data.map(item => ({
-      caseID: item.caseID,
+    caseData.value = result.data.map(item => ({
+      caseID: item.ID,
       uuid: item.uuid,
-      CreatedAt: item.CreatedAt.substring(1, 10) + ' ' + item.CreatedAt.substring(11, 19),
+      CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
+      content: item.content,
+      title: item.title,
+      severity: getSeverity(item.severity),
+      status: getStatus(item.status),
+      dataClosed: '未完成',
     }))
-    caseData.value = result.data
-    console.log('caseData:', result.data)
+    console.log('result:', result.data)
+    console.log('caseData:', caseData.value)
   })
+}
+
+const getSeverity = (num) => {
+  switch (num) {
+    case 0:
+      return '普通'
+    case 1:
+      return '紧急'
+    case 2:
+      return '非常紧急'
+    default:
+      return 'Unknown'
+  }
+}
+
+const getStatus = (num) => {
+  switch (num) {
+    case 0:
+      return '未处理'
+    case 1:
+      return '正在处理'
+    case 2:
+      return '已完成'
+    case 3:
+      return '异常'
+    default:
+      return 'Unknown'
+  }
 }
 
 onMounted(() => {
@@ -58,14 +92,14 @@ onMounted(() => {
         <el-table-column align="left" label="提交时间" min-width="180" prop="CreatedAt"/>
         <el-table-column align="left" label="紧急等级" min-width="180" prop="severity"/>
         <el-table-column align="left" label="案例状态" min-width="180" prop="status"/>
-        <el-table-column align="left" label="完结时间" min-width="180" prop="dateClosed"/>
+        <el-table-column align="left" label="完结时间" min-width="180" prop="dataClosed"/>
         <el-table-column align="left" label="操作" width="460">
           <template #default="scope">
             <el-button
-              icon="view"
+              icon="edit"
               type="primary"
               link
-            >查看详情
+            >编辑
             </el-button>
             <el-button
               icon="delete"
