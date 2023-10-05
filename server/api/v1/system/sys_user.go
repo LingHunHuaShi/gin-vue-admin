@@ -460,3 +460,34 @@ func (b *BaseApi) ResetPassword(c *gin.Context) {
 	}
 	response.OkWithMessage("重置成功", c)
 }
+
+// FindNickNameByUuid
+// @Tags SysUser
+// @Summary 根据UUID查询用户
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+func (b *BaseApi) FindNickNameByUuid(c *gin.Context) {
+	var Uuid string
+	var User *system.SysUser
+	err := c.ShouldBindJSON(&Uuid)
+
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if len(Uuid) == 0 {
+		response.FailWithMessage("uuid为空值", c)
+		return
+	}
+	User, err = userService.FindUserByUuid(Uuid)
+	if err != nil {
+		global.GVA_LOG.Error("查询失败", zap.Error(err))
+		response.FailWithMessage("查询失败"+err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(gin.H{"NickName": User.NickName}, "查询成功", c)
+
+}
