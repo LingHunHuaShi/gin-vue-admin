@@ -61,14 +61,15 @@ const getIntensity = (num) => {
 
 // TODO: fix bug that backend gets EOF error
 const getAlgorithmNameById = async(id) => {
-  const result = await findAlgorithmById(id)
+  const result = await findAlgorithmById({ algorithmID: id })
+  console.log('cur algo ID:', id)
   console.log('res:', result)
   console.log(result.data.algorithmName)
 }
 
 const getNickNameByUuid = async(uuid) => {
   const res = await findNickNameByUuid({ uuid: uuid })
-  console.log(res.data.NickName)
+  // console.log(res.data.NickName)
   return res.data.NickName
 }
 
@@ -77,7 +78,7 @@ const processTaskList = async(result) => {
     const nickName = await getNickNameByUuid(item.uuid)
     const resolution = getResolution(item.resolution)
     const intensity = getIntensity(item.intensity)
-    const algorithmName = await getAlgorithmNameById(item.algorithmID)
+    const algorithmName = await getAlgorithmNameById(item.ID)
 
     return {
       taskID: item.ID,
