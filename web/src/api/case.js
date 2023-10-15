@@ -47,7 +47,7 @@ export const deleteCase = (data) => {
 // UpdateCaseByCaseID 根据案例ID更新案例信息
 // 参数 caseID 案例ID, newCase 新的案例信息
 // 返回值 更新后的案例对象指针 错误信息
-export const updateCaseByCaseID = (data) => {
+export const updateCase = (data) => {
   return service({
     url: '/case/updateCase',
     method: 'put',

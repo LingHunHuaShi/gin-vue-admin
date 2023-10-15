@@ -43,7 +43,7 @@ import {
 }
   from 'vue'
 
-import { createTask } from '@/api/task'
+import { createTask, findTaskByTaskID, updateTask } from '@/api/task'
 import { getUserInfo } from '@/api/user'
 import { queryAllAlgorithm } from '@/api/algorithm'
 import { ElMessage } from 'element-plus'
@@ -126,25 +126,31 @@ export default defineComponent({
         // console.log('options:', state.algorithmOptions[0].value)
       })
     }
-    const setEditInfo = () => {
+    const setEditInfo = async() => {
       if (props.key === 'edit') {
-        state.formData.videoSource = props.scope.videoSource
-        // state.formData.intensity = props.scope.intensity
-        state.formData.resolution = props.scope.resolution
-        state.formData.algorithmId = props.scope.algorithmID
-        switch (props.scope.intensity) {
-          case '细':
-            state.formData.intensity = 3
-            break
-          case '中':
-            state.formData.intensity = 2
-            break
-          case '粗':
-            state.formData.intensity = 1
-            break
-          default:
-            break
-        }
+        // state.formData.videoSource = props.scope.videoSource
+        // // state.formData.intensity = props.scope.intensity
+        // state.formData.resolution = props.scope.resolution
+        // state.formData.algorithmId = props.scope.algorithmID
+        // switch (props.scope.intensity) {
+        //   case '细':
+        //     state.formData.intensity = 3
+        //     break
+        //   case '中':
+        //     state.formData.intensity = 2
+        //     break
+        //   case '粗':
+        //     state.formData.intensity = 1
+        //     break
+        //   default:
+        //     break
+        // }
+        await findTaskByTaskID({ ID: props.scope.taskID }).then(result => {
+          state.formData.intensity = result.data.intensity
+          state.formData.algorithmId = result.data.algorithmId
+          state.formData.resolution = result.data.resolution
+          state.formData.videoSource = result.data.videoSource
+        })
       }
     }
     onMounted(() => {
@@ -159,17 +165,34 @@ export default defineComponent({
       instance.ctx.$refs['vForm'].validate(async(valid) => {
         if (!valid) return
         // TODO: 提交表单
-        console.log('formData:' + state.formData.source)
-        await createTask(state.formData).then(res => {
-          if (res.code === 0) {
+        // console.log('formData:' + state.formData.source)
+        if (props.key === 'add') {
+          await createTask(state.formData).then(res => {
+            if (res.code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '添加成功！'
+              })
+            }
+          }).catch(err => {
+            console.error('Error:', err)
+          })
+        }
+        if (props.key === 'edit') {
+          await updateTask(state.formData).then(res => {
+            if (res.code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '更新成功！请刷新页面',
+              })
+            }
+          }).catch(err => {
             ElMessage({
-              type: 'success',
-              message: '添加成功！'
+              type: 'error',
+              message: err,
             })
-          }
-        }).catch(err => {
-          console.error('Error:', err)
-        })
+          })
+        }
       })
     }
     const resetForm = () => {

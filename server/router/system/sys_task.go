@@ -13,8 +13,8 @@ func (s *TaskRouter) InitTaskRouter(Router *gin.RouterGroup) {
 	TaskApi := v1.ApiGroupApp.SystemApiGroup.TaskApi
 	{
 		TaskRouter.POST("createTask", TaskApi.CreateTask)
-		TaskRouter.GET("findTaskByTaskID", TaskApi.FindTaskByTaskID)
-		TaskRouter.GET("findTaskByUser", TaskApi.FindTaskByUser)
+		TaskRouter.POST("findTaskByTaskID", TaskApi.FindTaskByTaskID)
+		TaskRouter.POST("findTaskByUser", TaskApi.FindTaskByUser)
 		TaskRouter.GET("queryOngoingTask", TaskApi.QueryOngoingTask)
 		TaskRouter.PUT("updateTask", TaskApi.UpdateTask)
 		TaskRouter.DELETE("deleteTask", TaskApi.DeleteTask)

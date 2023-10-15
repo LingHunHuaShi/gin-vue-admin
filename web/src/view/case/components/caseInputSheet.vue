@@ -42,7 +42,7 @@ import {
   getCurrentInstance, onMounted,
 }
   from 'vue'
-import { createCase, findCaseByCaseID, updateCaseByCaseID } from '@/api/case'
+import { createCase, findCaseByCaseID, updateCase } from '@/api/case'
 import { getUserInfo } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
@@ -154,7 +154,7 @@ export default defineComponent({
           })
         }
         if (props.key === 'edit') {
-          await updateCaseByCaseID(state.formData).then(res => {
+          await updateCase(state.formData).then(res => {
             if (res.code === 0) {
               ElMessage({
                 type: 'success',

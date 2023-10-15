@@ -17,7 +17,7 @@ export const createTask = (data) => {
 export const findTaskByUser = (data) => {
   return service({
     url: '/task/findTaskByUser',
-    method: 'get',
+    method: 'post',
     data
   })
 }
@@ -28,7 +28,7 @@ export const findTaskByUser = (data) => {
 export const findTaskByTaskID = (data) => {
   return service({
     url: '/task/findTaskByTaskID',
-    method: 'get',
+    method: 'post',
     data
   })
 }
@@ -47,7 +47,7 @@ export const deleteTask = (data) => {
 // UpdateTaskByTaskID 根据任务ID更新任务信息
 // 参数 taskID 任务ID, newTask 新的任务信息
 // 返回值 更新后的任务对象指针 错误信息
-export const updateTaskByTaskID = (data) => {
+export const updateTask = (data) => {
   return service({
     url: '/task/updateTask',
     method: 'put',
