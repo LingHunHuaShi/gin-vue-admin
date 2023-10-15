@@ -15,8 +15,8 @@
         ></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="任务容器算法" prop="algorithm" class="label-right-align">
-      <el-select v-model="formData.algorithm" class="full-width-input" clearable>
+    <el-form-item label="任务容器算法" prop="algorithmId" class="label-right-align">
+      <el-select v-model="formData.algorithmId" class="full-width-input" clearable>
         <el-option v-for="(item, index) in algorithmOptions" :key="index" :label="item.label"
                    :value="item.value" :disabled="item.disabled"
         ></el-option>
@@ -42,22 +42,33 @@ import {
   getCurrentInstance, onMounted,
 }
   from 'vue'
+
 import { createTask } from '@/api/task'
 import { getUserInfo } from '@/api/user'
 import { queryAllAlgorithm } from '@/api/algorithm'
-import async from 'async'
 import { ElMessage } from 'element-plus'
 
 export default defineComponent({
   components: {},
-  props: {},
-  setup() {
+  props: {
+    key: {
+      type: String,
+      required: true,
+      default: 'edit',
+    },
+    scope: {
+      type: Object,
+      required: true,
+    }
+  },
+  setup(props) {
+    console.log('props initial:', props)
     const state = reactive({
       formData: {
         uuid: '',
         videoSource: '',
         resolution: '',
-        algorithm: '',
+        algorithmId: '',
         intensity: null,
       },
       rules: {
@@ -105,17 +116,42 @@ export default defineComponent({
     }
     const getLocalAlgorithm = async() => {
       await queryAllAlgorithm().then((result) => {
-        state.algorithmOptions = result.data.map(item => ({
-          label: item.algorithmName,
-          value: item.algorithmID,
-        }))
-        console.log('options:' + state.algorithmOptions)
+        console.log('result:', result.data)
+        state.algorithmOptions = result.data.map(item => {
+          return {
+            label: item.algorithmName,
+            value: item.ID,
+          }
+        })
+        // console.log('options:', state.algorithmOptions[0].value)
       })
+    }
+    const setEditInfo = () => {
+      if (props.key === 'edit') {
+        state.formData.videoSource = props.scope.videoSource
+        // state.formData.intensity = props.scope.intensity
+        state.formData.resolution = props.scope.resolution
+        state.formData.algorithmId = props.scope.algorithmID
+        switch (props.scope.intensity) {
+          case '细':
+            state.formData.intensity = 3
+            break
+          case '中':
+            state.formData.intensity = 2
+            break
+          case '粗':
+            state.formData.intensity = 1
+            break
+          default:
+            break
+        }
+      }
     }
     onMounted(() => {
       setCurrentUuid()
       getLocalAlgorithm()
-      console.log('before:' + state.formData)
+      setEditInfo()
+      console.log('props:', props)
     })
 
     const instance = getCurrentInstance()

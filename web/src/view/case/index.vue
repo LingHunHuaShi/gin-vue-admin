@@ -1,14 +1,16 @@
 <script setup>
-// import { createCase } from '@/api/case'
 import { deleteCase, queryAllCases } from '@/api/case'
 import { onMounted, ref } from 'vue'
 import CaseInputSheet from '@/view/case/components/caseInputSheet.vue'
-import { getUserInfo, getUserList } from '@/api/user'
+import { findNickNameByUuid} from '@/api/user'
+import { ElMessage } from 'element-plus'
 
 const caseData = ref([])
 const caseDialogVisible = ref(false)
 const dialogTitle = ref('新增案例')
 const caseRef = ref(null)
+const dialogKey = ref('add')
+const dialogData = ref({})
 
 const showInputDialog = () => {
   caseDialogVisible.value = true
@@ -25,20 +27,40 @@ const submitDialog = () => {
 }
 
 const getCaseData = async() => {
-  await queryAllCases().then((result) => {
-    caseData.value = result.data.map(item => ({
+  // await queryAllCases().then((result) => {
+  //   caseData.value = result.data.map(item => ({
+  //     caseID: item.ID,
+  //     nickName: getNickNameByUuid(item.uuid),
+  //     CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
+  //     content: item.content,
+  //     tistate.formData.algoIdtle: item.title,
+  //     severity: getSeverity(item.severity),
+  //     status: getStatus(item.status),
+  //     dataClosed: '未完成',
+  //   }))
+  //   console.log('result:', result.data)
+  //   console.log('caseData:', caseData.value)
+  // })
+  const result = await queryAllCases()
+  await processCaseList(result)
+}
+
+const processCaseList = async(result) => {
+  caseData.value = await Promise.all(result.data.map(async(item) => {
+    const nickName = await getNickNameByUuid(item.uuid)
+    const severity = getSeverity(item.severity)
+    const status = getStatus(item.status)
+    return {
       caseID: item.ID,
-      uuid: item.uuid,
+      nickName: nickName,
       CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
       content: item.content,
       title: item.title,
-      severity: getSeverity(item.severity),
-      status: getStatus(item.status),
+      severity: severity,
+      status: status,
       dataClosed: '未完成',
-    }))
-    console.log('result:', result.data)
-    console.log('caseData:', caseData.value)
-  })
+    }
+  }))
 }
 
 const getSeverity = (num) => {
@@ -69,6 +91,36 @@ const getStatus = (num) => {
   }
 }
 
+const getNickNameByUuid = async(uuid) => {
+  const res = await findNickNameByUuid({ uuid: uuid })
+  // console.log(res.data.NickName)
+  return res.data.NickName
+}
+
+const deleteCaseInForm = async(caseID) => {
+  console.log('caseID:', caseID)
+  await deleteCase({ ID: caseID }).then(res => {
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '删除成功！请刷新页面'
+      })
+    }
+  }).catch(err => {
+    ElMessage({
+      type: 'error',
+      message: err
+    })
+  })
+}
+
+const editCase = (scope) => {
+  dialogKey.value = 'edit'
+  dialogTitle.value = '编辑案例'
+  dialogData.value = scope
+  showInputDialog()
+}
+
 onMounted(() => {
   getCaseData()
 })
@@ -87,7 +139,7 @@ onMounted(() => {
         style="width: 100%"
       >
         <el-table-column label="案件ID" min-width="180" prop="caseID"/>
-        <el-table-column align="left" label="发起人UUID" min-width="180" prop="uuid"/>
+        <el-table-column align="left" label="发起人" min-width="180" prop="nickName"/>
         <el-table-column align="left" label="案例标题" min-width="180" prop="title"/>
         <el-table-column align="left" label="提交时间" min-width="180" prop="CreatedAt"/>
         <el-table-column align="left" label="紧急等级" min-width="180" prop="severity"/>
@@ -99,13 +151,14 @@ onMounted(() => {
               icon="edit"
               type="primary"
               link
+              @click="editCase(scope.row)"
             >编辑
             </el-button>
             <el-button
               icon="delete"
               type="primary"
               link
-              @click="deleteCase(scope.row)"
+              @click="deleteCaseInForm(scope.row.caseID)"
             >删除
             </el-button>
           </template>
@@ -113,7 +166,7 @@ onMounted(() => {
       </el-table>
     </div>
     <el-dialog v-model="caseDialogVisible" :title="dialogTitle">
-      <case-input-sheet ref="caseRef" />
+      <case-input-sheet ref="caseRef" :key="dialogKey" :scope="dialogData" />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>

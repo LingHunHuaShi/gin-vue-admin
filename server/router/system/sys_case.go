@@ -13,8 +13,8 @@ func (s *CaseRouter) InitCaseRouter(Router *gin.RouterGroup) {
 	CaseApi := v1.ApiGroupApp.SystemApiGroup.CaseApi
 	{
 		CaseRouter.POST("createCase", CaseApi.CreateCase)
-		CaseRouter.GET("findCaseByCaseID", CaseApi.FindCaseByCaseID)
-		CaseRouter.GET("findCaseByUUID", CaseApi.FindCaseByUUID)
+		CaseRouter.POST("findCaseByCaseID", CaseApi.FindCaseByCaseID)
+		CaseRouter.POST("findCaseByUUID", CaseApi.FindCaseByUUID)
 		CaseRouter.GET("queryAllCases", CaseApi.QueryAllCases)
 		CaseRouter.PUT("updateCase", CaseApi.UpdateCase)
 		CaseRouter.DELETE("deleteCase", CaseApi.DeleteCase)

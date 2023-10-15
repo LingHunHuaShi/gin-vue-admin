@@ -42,13 +42,24 @@ import {
   getCurrentInstance, onMounted,
 }
   from 'vue'
-import { createCase } from '@/api/case'
+import { createCase, findCaseByCaseID, updateCaseByCaseID } from '@/api/case'
 import { getUserInfo } from '@/api/user'
+import { ElMessage } from 'element-plus'
 
 export default defineComponent({
   components: {},
-  props: {},
-  setup() {
+  props: {
+    key: {
+      type: String,
+      required: true,
+      default: 'edit',
+    },
+    scope: {
+      type: Object,
+      required: true,
+    }
+  },
+  setup(props) {
     const state = reactive({
       formData: {
         uuid: '',
@@ -101,16 +112,62 @@ export default defineComponent({
         state.formData.uuid = result.data.userInfo.uuid
       })
     }
+    const setEditInfo = async() => {
+      if (props.key === 'edit') {
+        await findCaseByCaseID({ ID: props.scope.caseID }).then(result => {
+          state.formData.title = result.data.title
+          state.formData.content = result.data.content
+          state.formData.severity = result.data.severity
+          state.formData.solution = result.data.solution
+          state.formData.status = result.data.status
+        }).catch(err => {
+          ElMessage({
+            type: 'error',
+            message: err
+          })
+        })
+      }
+    }
     onMounted(() => {
       setCurrentUser()
+      setEditInfo()
     })
     const instance = getCurrentInstance()
     const submitForm = () => {
-      instance.ctx.$refs['vForm'].validate(valid => {
+      instance.ctx.$refs['vForm'].validate(async(valid) => {
         if (!valid) return
         // TODO: 提交表单
-        console.log(state.formData.uuid)
-        createCase(state.formData)
+        // console.log(state.formData.uuid)
+        if (props.key === 'add') {
+          await createCase(state.formData).then(res => {
+            if (res.code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '添加成功! 请刷新页面'
+              })
+            }
+          }).catch(err => {
+            ElMessage({
+              type: 'error',
+              message: err,
+            })
+          })
+        }
+        if (props.key === 'edit') {
+          await updateCaseByCaseID(state.formData).then(res => {
+            if (res.code === 0) {
+              ElMessage({
+                type: 'success',
+                message: '更新成功！请刷新页面',
+              })
+            }
+          }).catch(err => {
+            ElMessage({
+              type: 'error',
+              message: err,
+            })
+          })
+        }
       })
     }
     const resetForm = () => {

@@ -1,19 +1,23 @@
 <script setup>
-// import { createCase } from '@/api/case'
-import { deleteCase, findCaseByCaseID } from '@/api/case'
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted, ref, watch } from 'vue'
 import TaskInputSheet from './components/taskInputSheet.vue'
-import { queryOngoingTask } from '@/api/task'
+import { deleteTask, queryOngoingTask } from '@/api/task'
 import { findAlgorithmById } from '@/api/algorithm'
 import { ElMessage } from 'element-plus'
-import { map } from 'core-js/internals/array-iteration'
 import { findNickNameByUuid } from '@/api/user'
-import axios from 'axios'
 
 const taskData = ref([])
 const taskDialogVisible = ref(false)
 const taskTitle = ref('新增任务')
 const taskRef = ref(null)
+
+const algoNumTextType = ref('default')
+const taskNumber = ref(0)
+const maxTaskNumber = 3
+const addDisabled = ref(false)
+
+const dialogKey = ref('add')
+const dialogData = ref({})
 
 const showInputDialog = () => {
   taskDialogVisible.value = true
@@ -61,10 +65,11 @@ const getIntensity = (num) => {
 
 // TODO: fix bug that backend gets EOF error
 const getAlgorithmNameById = async(id) => {
-  const result = await findAlgorithmById({ algorithmID: id })
-  console.log('cur algo ID:', id)
-  console.log('res:', result)
-  console.log(result.data.algorithmName)
+  const res = await findAlgorithmById({ ID: id })
+  // console.log('cur algo ID:', id)
+  // console.log('res:', result)
+  // console.log(result.data.algorithmName)
+  return res.data.algorithmName
 }
 
 const getNickNameByUuid = async(uuid) => {
@@ -78,7 +83,7 @@ const processTaskList = async(result) => {
     const nickName = await getNickNameByUuid(item.uuid)
     const resolution = getResolution(item.resolution)
     const intensity = getIntensity(item.intensity)
-    const algorithmName = await getAlgorithmNameById(item.ID)
+    const algorithmName = await getAlgorithmNameById(item.algorithmId)
 
     return {
       taskID: item.ID,
@@ -87,7 +92,7 @@ const processTaskList = async(result) => {
       videoSource: item.videoSource,
       CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
       resolution,
-      algorithmID: item.ID,
+      algorithmID: item.algorithmId,
       intensity,
       algorithmName,
     }
@@ -97,31 +102,51 @@ const processTaskList = async(result) => {
 const getTaskList = async() => {
   const result = await queryOngoingTask()
   console.log('result:', result.data)
-  // taskData.value = result.data.map(item => ({
-  //   taskID: item.ID,
-  //   uuid: item.uuid,
-  //   nickName: getNickNameByUuid(item.uuid),
-  //   videoSource: item.videoSource,
-  //   CreatedAt: item.CreatedAt.substring(0, 10) + ' ' + item.CreatedAt.substring(11, 19),
-  //   resolution: getResolution(item.resolution),
-  //   // algorithmName: getAlgorithmNameById(item.algorithmId)
-  //   algorithmID: item.ID,
-  //   intensity: getIntensity(item.intensity),
-  // }))
+
   await processTaskList(result)
   console.log('taskData:', taskData.value)
+  taskNumber.value = taskData.value.length
+  if (taskNumber.value >= maxTaskNumber) {
+    addDisabled.value = true
+    algoNumTextType.value = 'danger'
+  }
+}
+
+const deleteTaskInForm = async(taskID) => {
+  await deleteTask({ ID: taskID }).then(res => {
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '删除成功！请刷新页面'
+      })
+    }
+  }).catch(err => {
+    ElMessage({
+      type: 'error',
+      message: err
+    })
+  })
+}
+
+const editTask = (scope) => {
+  dialogKey.value = 'edit'
+  taskTitle.value = '编辑任务'
+  dialogData.value = scope
+  showInputDialog()
 }
 
 onMounted(() => {
   getTaskList()
 })
+
 </script>
 
 <template>
   <div class="case">
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="showInputDialog">新增任务</el-button>
+        <el-button :disabled="addDisabled" type="primary" icon="plus" @click="showInputDialog">新增任务</el-button>
+        <el-text size="large" :type="algoNumTextType">&nbsp; &nbsp; 当前已使用的算法数量：{{ taskNumber }} / 3</el-text>
       </div>
       <el-table
         :data="taskData"
@@ -137,19 +162,20 @@ onMounted(() => {
         <el-table-column align="left" label="任务容器算法名称" min-width="180" prop="algorithmName" />
         <el-table-column align="left" label="任务粒度" min-width="180" prop="intensity" />
         <el-table-column align="left" lebal="任务状态" min-width="180" prop="status" />
-        <el-table-column align="left" label="操作" width="460">
+        <el-table-column align="left" label="操作" width="260">
           <template #default="scope">
             <el-button
               icon="edit"
               type="primary"
               link
+              @click="editTask(scope.row)"
             >编辑
             </el-button>
             <el-button
               icon="delete"
               type="primary"
               link
-              @click="deleteCase(scope.row)"
+              @click="deleteTaskInForm(scope.row.taskID)"
             >删除
             </el-button>
           </template>
@@ -157,7 +183,7 @@ onMounted(() => {
       </el-table>
     </div>
     <el-dialog v-model="taskDialogVisible" :title="taskTitle">
-      <task-input-sheet ref="taskRef" />
+      <task-input-sheet ref="taskRef" :key="dialogKey" :scope="dialogData" />
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>

@@ -12,7 +12,11 @@ const taskRef = ref(null)
 const currentAlgoName = ref('defaultName')
 const currentAlgoId = ref(-1)
 const propsLoaded = ref(false)
+const addDisabled = ref(false)
+const maxTaskNumber = 3
+const addBtnText = ref('新建任务')
 
+const taskData = ref([])
 const getInstalledAlgorithm = async() => {
   await queryAllAlgorithm().then((result) => {
     installed.value = result.data
@@ -39,8 +43,20 @@ const cancelDialog = () => {
   propsLoaded.value = false
 }
 
+
+const getTaskNumber = async() => {
+  await queryOngoingTask().then(res => {
+    taskData.value = res.data
+  })
+  if (taskData.value.length >= maxTaskNumber) {
+    addDisabled.value = true
+    addBtnText.value = '任务数量达到上限'
+  }
+}
+
 onMounted(() => {
   getInstalledAlgorithm()
+  getTaskNumber()
 })
 
 // const usedNPUCore = computed(() => {
@@ -50,6 +66,8 @@ onMounted(() => {
 //   }
 //   return totalCore
 // })
+
+// TODO: fix本地算法添加的任务无法查询
 
 </script>
 
@@ -99,7 +117,7 @@ onMounted(() => {
             <br>
             <div class="align-right">
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
-              <el-button type="primary" class="el-button" @click="showTaskDialog(algorithm)">新建任务</el-button>
+              <el-button :disabled="addDisabled" type="primary" class="el-button" @click="showTaskDialog(algorithm)">{{ addBtnText }}</el-button>
             </div>
           </div>
         </el-card>

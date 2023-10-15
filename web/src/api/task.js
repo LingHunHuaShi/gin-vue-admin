@@ -49,7 +49,7 @@ export const deleteTask = (data) => {
 // 返回值 更新后的任务对象指针 错误信息
 export const updateTaskByTaskID = (data) => {
   return service({
-    url: '/task/updateTaskByTaskID',
+    url: '/task/updateTask',
     method: 'put',
     data
   })

@@ -125,16 +125,16 @@ export default defineComponent({
         console.log('formData:' + state.formData.source)
         const taskData = {
           uuid: state.formData.uuid,
-          source: state.formData.source,
+          videoSource: state.formData.source,
           resolution: state.formData.resolution,
-          algorithm: state.formData.algoId,
+          algorithmId: props.algoId,
           intensity: state.formData.intensity,
         }
         await createTask(taskData).then(res => {
           if (res.code === 0) {
             ElMessage({
               type: 'success',
-              message: '添加成功！'
+              message: '添加成功！请刷新页面'
             })
           }
         }).catch(err => {

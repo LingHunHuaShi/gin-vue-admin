@@ -17,7 +17,7 @@ export const createCase = (data) => {
 export const findCaseByUser = (data) => {
   return service({
     url: '/case/findCaseByUser',
-    method: 'get',
+    method: 'post',
     data
   })
 }
@@ -28,7 +28,7 @@ export const findCaseByUser = (data) => {
 export const findCaseByCaseID = (data) => {
   return service({
     url: '/case/findCaseByCaseID',
-    method: 'get',
+    method: 'post',
     data
   })
 }
@@ -49,7 +49,7 @@ export const deleteCase = (data) => {
 // 返回值 更新后的案例对象指针 错误信息
 export const updateCaseByCaseID = (data) => {
   return service({
-    url: '/case/updateCaseByCaseID',
+    url: '/case/updateCase',
     method: 'put',
     data
   })
