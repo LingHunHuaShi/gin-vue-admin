@@ -74,21 +74,21 @@ func (t *TaskService) DeleteTask(taskID uint) (err error) {
 // UpdateTaskByTaskID 根据任务ID更新任务信息
 // 参数 taskID 任务ID, newTask 新的任务信息
 // 返回值 更新后的任务对象指针 错误信息
-func (t *TaskService) UpdateTaskByTaskID(taskID uint, newTask system.SysTask) (updateTask *system.SysTask, err error) {
+func (t *TaskService) UpdateTaskByTaskID(Task system.SysTask) (updateTask *system.SysTask, err error) {
 	var task system.SysTask
 
 	// 查询任务是否存在
-	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
+	err = global.GVA_DB.Where("ID = ?", Task.ID).First(&task).Error
 	if err != nil {
 		return &task, errors.New("任务不存在")
 	}
 
 	// 更新任务信息
-	err = global.GVA_DB.Model(&task).Updates(newTask).Error
+	err = global.GVA_DB.Model(&task).Updates(Task).Error
 	if err != nil {
 		return &task, errors.New("更新失败")
 	}
-	return &newTask, err
+	return &Task, err
 }
 
 // QueryOngoingTask
