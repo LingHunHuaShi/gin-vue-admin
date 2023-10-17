@@ -62,6 +62,7 @@ export default defineComponent({
   setup(props) {
     const state = reactive({
       formData: {
+        ID: null,
         uuid: '',
         title: '',
         content: '',
@@ -114,6 +115,7 @@ export default defineComponent({
     }
     const setEditInfo = async() => {
       if (props.key === 'edit') {
+        state.formData.ID = props.scope.caseID
         await findCaseByCaseID({ ID: props.scope.caseID }).then(result => {
           state.formData.title = result.data.title
           state.formData.content = result.data.content

@@ -2,12 +2,42 @@
   <div>
     <div class="gva-card-box">
       <div class="gva-card">
-        <div class="card-header">
-          <span></span>
+<!--        <div class="card-header">-->
+<!--          <span></span>-->
+<!--        </div>-->
+        <div class="monitor-box">
+          <el-card>
+            <template #header>
+              <el-text size="large" style="">实时图像</el-text>
+            </template>
+            <el-row>
+              <el-col :sm="12" :md="6" :lg="6" :xs="12" :xl="4">
+                <el-select v-model="streamNumber" placeholder="选择布局" :disabled="streamLayoutDisable" @change="streams=[]">
+                  <el-option v-for="(task, index) in taskList" :key="index" :value="index + 1" :label="index + 1 + '路'" />
+                </el-select>
+              </el-col>
+              <el-col :sm="12" :md="6" :lg="6" :xs="12" :xl="4">
+                <el-select
+                    v-model="streams"
+                    placeholder="选择展示的流"
+                    :disabled="streamLayoutDisable"
+                    multiple
+                    :multiple-limit="streamNumber"
+                    collapse-tags
+                    collapse-tags-tooltip
+                >
+                  <el-option v-for="(task, index) in taskList" :key="index" :label="'算法:'+task.algorithmName+' 视频源:'+task.videoSource" :value="task.ID" />
+                </el-select>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col v-for="(stream, index) in streams" :key="index" :xs="24" :sm="12" :md="12" :lg="24/streamNumber">
+                <el-image :src="dynamicPicSrc" />
+              </el-col>
+            </el-row>
+          </el-card>
         </div>
-        <div class="echart-box">
-          <echarts-line />
-        </div>
+
       </div>
     </div>
     <el-row :gutter="15" class="system_state">
@@ -150,8 +180,12 @@
 
 <script setup>
 import { getSystemState } from '@/api/system'
-import { onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import EchartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
+import VueNativeSock from 'vue-native-websocket'
+import { queryOngoingTask } from '@/api/task'
+import { ElMessage } from 'element-plus'
+import { findAlgorithmById } from '@/api/algorithm'
 const timer = ref(null)
 const state = ref({})
 const colors = ref([
@@ -160,9 +194,40 @@ const colors = ref([
   { color: '#f56c6c', percentage: 80 }
 ])
 
+const taskList = ref([])
+const streamNumber = ref(1)
+const streams = ref([])
+const streamLayoutDisable = ref(false)
+
+const dynamicPicSrc = ref('https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg')
+const wsPath = 'ws://' + import.meta.env.VITE_BASE_PATH.substring(7)
+
 const reload = async() => {
   const { data } = await getSystemState()
   state.value = data.server
+}
+
+const getAlgorithmNameById = async(id) => {
+  const res = await findAlgorithmById({ ID: id })
+  return res.data.algorithmName
+}
+
+const processList = async(result) => {
+  taskList.value = await Promise.all(result.data.map(async(item) => {
+    const algorithmName = await getAlgorithmNameById(item.algorithmId)
+    console.log('name:', algorithmName)
+    return {
+      ID: item.ID,
+      algorithmName,
+      videoSource: item.videoSource,
+    }
+  }))
+}
+
+const getTasks = async() => {
+  const result = await queryOngoingTask()
+  await processList(result)
+  console.log(taskList.value)
 }
 
 reload()
@@ -175,6 +240,12 @@ onUnmounted(() => {
   timer.value = null
 })
 
+onMounted(async() => {
+  await getTasks()
+  if (taskList.value.length === 0) {
+    streamLayoutDisable.value = true
+  }
+})
 
 </script>
 
@@ -192,4 +263,15 @@ export default {
 .card_item {
   height: 280px;
 }
+
+.monitor-box {
+  padding: 10px;
+}
+
+.monitor-img {
+  width: 33%;
+  height: auto;
+  margin: auto;
+}
+
 </style>

@@ -66,9 +66,6 @@ const getIntensity = (num) => {
 // TODO: fix bug that backend gets EOF error
 const getAlgorithmNameById = async(id) => {
   const res = await findAlgorithmById({ ID: id })
-  // console.log('cur algo ID:', id)
-  // console.log('res:', result)
-  // console.log(result.data.algorithmName)
   return res.data.algorithmName
 }
 

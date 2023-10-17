@@ -65,6 +65,7 @@ export default defineComponent({
     console.log('props initial:', props)
     const state = reactive({
       formData: {
+        ID: null,
         uuid: '',
         videoSource: '',
         resolution: '',
@@ -128,23 +129,7 @@ export default defineComponent({
     }
     const setEditInfo = async() => {
       if (props.key === 'edit') {
-        // state.formData.videoSource = props.scope.videoSource
-        // // state.formData.intensity = props.scope.intensity
-        // state.formData.resolution = props.scope.resolution
-        // state.formData.algorithmId = props.scope.algorithmID
-        // switch (props.scope.intensity) {
-        //   case '细':
-        //     state.formData.intensity = 3
-        //     break
-        //   case '中':
-        //     state.formData.intensity = 2
-        //     break
-        //   case '粗':
-        //     state.formData.intensity = 1
-        //     break
-        //   default:
-        //     break
-        // }
+        state.formData.ID = props.scope.taskID
         await findTaskByTaskID({ ID: props.scope.taskID }).then(result => {
           state.formData.intensity = result.data.intensity
           state.formData.algorithmId = result.data.algorithmId

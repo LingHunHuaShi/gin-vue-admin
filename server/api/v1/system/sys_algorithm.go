@@ -58,8 +58,6 @@ func (s *AlgorithmApi) FindAlgorithmById(c *gin.Context) {
 
 	var algorithm system.SysAlgorithm
 	err := c.ShouldBindJSON(&algorithm)
-	var algorithm system.SysAlgorithm
-	err := c.ShouldBindJSON(&algorithm)
 	if err != nil {
 		response.FailWithMessage("查找失败!", c)
 		return
@@ -85,7 +83,7 @@ func (s *AlgorithmApi) FindAlgorithmById(c *gin.Context) {
 		}
 	*/
 
-	algo, err := algorithmService.FindAlgorithmById(algorithm.ID)
+	algo, err = algorithmService.FindAlgorithmById(algorithm.ID)
 
 	if err != nil {
 		global.GVA_LOG.Error("查找失败!2", zap.Error(err))

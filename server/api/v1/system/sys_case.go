@@ -96,7 +96,7 @@ func (Api *CaseApi) UpdateCase(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	MyCase, err := caseService.UpdateCaseByCaseID(Case.ID, Case)
+	MyCase, err := caseService.UpdateCaseByCaseID(Case)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
 		response.FailWithMessage("更新失败2!", c)

@@ -97,7 +97,7 @@ func (Api *TaskApi) UpdateTask(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	newTask, err := taskService.UpdateTaskByTaskID(Task.ID, Task)
+	newTask, err := taskService.UpdateTaskByTaskID(Task)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
 		response.FailWithMessage("更新失败2!", c)
