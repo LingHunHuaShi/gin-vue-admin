@@ -73,17 +73,17 @@ func (c *CaseService) DeleteCase(caseID uint) (err error) {
 // UpdateCaseByCaseID 根据案例ID更新案例信息
 // 参数 caseID 案例ID, newCase 新的案例信息
 // 返回值 更新后的案例对象指针 错误信息
-func (c *CaseService) UpdateCaseByCaseID(caseID uint, newCase system.SysCase) (updateCase *system.SysCase, err error) {
+func (c *CaseService) UpdateCaseByCaseID(Case system.SysCase) (updateCase *system.SysCase, err error) {
 	var caseObj system.SysCase
 
 	// 查询案例是否存在
-	err = global.GVA_DB.Where("ID = ?", caseID).First(&caseObj).Error
+	err = global.GVA_DB.Where("ID = ?", Case.ID).First(&caseObj).Error
 	if err != nil {
 		return &caseObj, errors.New("案例不存在")
 	}
 
 	// 更新案例信息
-	err = global.GVA_DB.Model(&caseObj).Updates(newCase).Error
+	err = global.GVA_DB.Model(&caseObj).Updates(Case).Error
 	if err != nil {
 		return &caseObj, errors.New("更新失败")
 	}
