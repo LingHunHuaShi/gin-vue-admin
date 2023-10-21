@@ -2,8 +2,12 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
+	"os"
+	"os/exec"
+	"time"
 )
 
 /*
@@ -74,7 +78,7 @@ func (t *TaskService) DeleteTask(taskID uint) (err error) {
 // UpdateTaskByTaskID 根据任务ID更新任务信息
 // 参数 taskID 任务ID, newTask 新的任务信息
 // 返回值 更新后的任务对象指针 错误信息
-func (t *TaskService) UpdateTaskByTaskID(Task system.SysTask) (updateTask *system.SysTask, err error) {
+func (t *TaskService) UpdateTask(Task system.SysTask) (updateTask *system.SysTask, err error) {
 	var task system.SysTask
 
 	// 查询任务是否存在
@@ -100,4 +104,47 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 		return nil, errors.New("查询失败")
 	}
 	return Container, err
+}
+
+func (t *TaskService) StartTask(Task system.SysTask) (err error) {
+	var task system.SysTask
+	if err := global.GVA_DB.Where("ID = ?", Task.ID).First(&task).Error; err != nil {
+		return err
+	}
+
+	// 修改任务的Status属性为0
+	task.Status = 0
+
+	// 更新任务到数据库
+	if err := global.GVA_DB.Save(&task).Error; err != nil {
+		return err
+	}
+	var url string = task.VideoSource
+	var model_path string = "/data/Yolo_Rknn/model/..."
+
+	cmdName := "/data/Yolo_Rknn/Yolo_Rknn" // 替换为实际的二进制程序路径
+	cmdArgs := []string{model_path, url}   // 替换为实际的参数
+	// 创建一个Cmd对象
+	cmd := exec.Command(cmdName, cmdArgs...)
+	// 设置命令的标准输入、输出和错误
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// 执行命令
+	err = cmd.Run()
+
+	// 在一定时间后终止命令（示例中为3秒）
+	go func() {
+		time.Sleep(120 * time.Second)
+		if err := cmd.Process.Kill(); err != nil {
+			fmt.Println("终止命令失败:", err)
+		}
+	}()
+
+	if err != nil {
+		fmt.Println("命令执行失败:", err)
+		return err
+	}
+	return nil
 }
