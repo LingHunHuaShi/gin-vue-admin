@@ -4,7 +4,7 @@ import { queryAllAlgorithm } from '@/api/algorithm'
 import axios from 'axios'
 
 // 拉取算法的地址
-const getAlgoAddress = 'http://192.168.108.212:8080/algorithm/algorithm/list'
+const getAlgoAddress = 'http://192.168.21.212:8888/algorithm/algorithm/list'
 
 const dialogVisible = ref(false)
 
@@ -52,6 +52,7 @@ const getOnCloudAlgorithms = async() => {
 
 const downloadAlgorithm = () => {
   // TODO:download algorithm here
+  location.href = 'http://192.168.21.212:8888/files/1697604349953'
   dialogVisible.value = false
 }
 
