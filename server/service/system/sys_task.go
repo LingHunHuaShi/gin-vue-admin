@@ -108,22 +108,25 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 
 func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	var task system.SysTask
-	if err := global.GVA_DB.Where("ID = ?", Task.ID).First(&task).Error; err != nil {
-		return err
-	}
+	// if err := global.GVA_DB.Where("ID = ?", Task.ID).First(&task).Error; err != nil {
+	//return err
+	//}
 
 	// 修改任务的Status属性为0
-	task.Status = 0
+	// task.Status = 0
 
-	// 更新任务到数据库
-	if err := global.GVA_DB.Save(&task).Error; err != nil {
-		return err
-	}
+	/*
+		// 更新任务到数据库
+		if err := global.GVA_DB.Save(&task).Error; err != nil {
+			return err
+		}
+	*/
+
 	var url string = task.VideoSource
-	var model_path string = "/data/Yolo_Rknn/model/..."
+	var model_path string = "/data/yolo/Yolo_Rknn/model/RK3588/yolov5lite-g_train_coco.rknn"
 
-	cmdName := "/data/Yolo_Rknn/Yolo_Rknn" // 替换为实际的二进制程序路径
-	cmdArgs := []string{model_path, url}   // 替换为实际的参数
+	cmdName := "/data/yolo/Yolo_Rknn/Yolo_Rknn" // 替换为实际的二进制程序路径
+	cmdArgs := []string{model_path, url}        // 替换为实际的参数
 	// 创建一个Cmd对象
 	cmd := exec.Command(cmdName, cmdArgs...)
 	// 设置命令的标准输入、输出和错误
@@ -146,5 +149,12 @@ func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 		fmt.Println("命令执行失败:", err)
 		return err
 	}
+	/*
+		task.Status = 1
+		if err := global.GVA_DB.Save(&task).Error; err != nil {
+			return err
+		}
+	*/
+
 	return nil
 }
