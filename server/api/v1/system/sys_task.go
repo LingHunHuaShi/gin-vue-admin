@@ -97,7 +97,7 @@ func (Api *TaskApi) UpdateTask(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	newTask, err := taskService.UpdateTaskByTaskID(Task)
+	newTask, err := taskService.UpdateTask(Task)
 	if err != nil {
 		global.GVA_LOG.Error("更新失败2!", zap.Error(err))
 		response.FailWithMessage("更新失败2!", c)
@@ -118,4 +118,20 @@ func (Api *TaskApi) QueryOngoingTask(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(Container, "查询成功", c)
+}
+
+func (Api *TaskApi) StartTask(c *gin.Context) {
+	var Task system.SysTask
+	err := c.ShouldBindJSON(&Task)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err = taskService.StartTask(Task)
+	if err != nil {
+		global.GVA_LOG.Error("执行失败!", zap.Error(err))
+		response.FailWithMessage("执行失败2!", c)
+		return
+	}
+	response.OkWithMessage("执行成功", c)
 }
