@@ -32,7 +32,7 @@
             </el-row>
             <el-row>
               <el-col v-for="(stream, index) in streams" :key="index" :xs="24" :sm="12" :md="12" :lg="24/streamNumber">
-                <el-image :src="dynamicPicSrc" />
+                <video :src="videoSrc" />
               </el-col>
             </el-row>
           </el-card>
@@ -186,6 +186,8 @@ import VueNativeSock from 'vue-native-websocket'
 import { queryOngoingTask } from '@/api/task'
 import { ElMessage } from 'element-plus'
 import { findAlgorithmById } from '@/api/algorithm'
+// import RtspPlayer from 'vue-rtsp-player'
+
 const timer = ref(null)
 const state = ref({})
 const colors = ref([
@@ -199,8 +201,8 @@ const streamNumber = ref(1)
 const streams = ref([])
 const streamLayoutDisable = ref(false)
 
-const dynamicPicSrc = ref('https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg')
 const wsPath = 'ws://' + import.meta.env.VITE_BASE_PATH.substring(7)
+const videoSrc = 'rtsp://3.106.55.0:8554/mystream'
 
 const reload = async() => {
   const { data } = await getSystemState()
