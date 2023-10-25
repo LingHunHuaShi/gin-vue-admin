@@ -13,7 +13,6 @@ const taskRef = ref(null)
 
 const algoNumTextType = ref('default')
 const taskNumber = ref(0)
-const maxTaskNumber = 3
 const addDisabled = ref(false)
 
 const dialogKey = ref('add')
@@ -103,10 +102,7 @@ const getTaskList = async() => {
   await processTaskList(result)
   console.log('taskData:', taskData.value)
   taskNumber.value = taskData.value.length
-  if (taskNumber.value >= maxTaskNumber) {
-    addDisabled.value = true
-    algoNumTextType.value = 'danger'
-  }
+
 }
 
 const deleteTaskInForm = async(taskID) => {
@@ -142,8 +138,8 @@ onMounted(() => {
   <div class="case">
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button :disabled="addDisabled" type="primary" icon="plus" @click="showInputDialog">新增任务</el-button>
-        <el-text size="large" :type="algoNumTextType">&nbsp; &nbsp; 当前已使用的算法数量：{{ taskNumber }} / 3</el-text>
+        <el-button type="primary" icon="plus" @click="showInputDialog">新增任务</el-button>
+        <el-text size="large" :type="algoNumTextType">&nbsp; &nbsp; 当前已使用的算法数量：{{ taskNumber }}</el-text>
       </div>
       <el-table
         :data="taskData"
