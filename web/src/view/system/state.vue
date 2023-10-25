@@ -12,11 +12,6 @@
             </template>
             <el-row>
               <el-col :sm="12" :md="6" :lg="6" :xs="12" :xl="4">
-                <el-select v-model="streamNumber" placeholder="选择布局" :disabled="streamLayoutDisable" @change="streams=[]">
-                  <el-option v-for="(task, index) in taskList" :key="index" :value="index + 1" :label="index + 1 + '路'" />
-                </el-select>
-              </el-col>
-              <el-col :sm="12" :md="6" :lg="6" :xs="12" :xl="4">
                 <el-select
                     v-model="streams"
                     placeholder="选择展示的流"
