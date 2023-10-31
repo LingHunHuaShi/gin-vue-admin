@@ -11,18 +11,24 @@
               <el-text size="large" style="">实时图像</el-text>
             </template>
             <el-row>
+              <el-button @click="setRTSP">
+<!--                <canvas id="canvas-2" style="height: 300px; width:100px;"/>-->
+              </el-button>
 
               <el-col :sm="12" :md="6" :lg="6" :xs="12" :xl="4">
-                <el-select
-                    v-model="streams"
-                    placeholder="选择展示的流"
-                    :disabled="streamLayoutDisable"
-                    multiple
-                    collapse-tags
-                    collapse-tags-tooltip
-                >
-                  <el-option v-for="(task, index) in taskList" :key="index" :label="'算法:'+task.algorithmName+' 视频源:'+task.videoSource" :value="task.ID" />
-                </el-select>
+<!--                <el-select-->
+<!--                    v-model="streams"-->
+<!--                    placeholder="选择展示的流"-->
+<!--                    multiple-->
+<!--                    collapse-tags-->
+<!--                    collapse-tags-tooltip-->
+<!--                >-->
+<!--&lt;!&ndash;                  <el-option v-for="(task, index) in taskList" :key="index" :label="'算法:'+task.algorithmName+' 视频源:'+task.videoSource" :value="task.ID" />&ndash;&gt;-->
+<!--                  <el-option>-->
+<!--                    <canvas id="canvas-2" style="max-height: 500px" />-->
+<!--                  </el-option>-->
+<!--                </el-select>-->
+
               </el-col>
             </el-row>
             <el-row>
@@ -196,10 +202,6 @@ const colors = ref([
 const taskList = ref([])
 const streamNumber = ref(1)
 const streams = ref([])
-const streamLayoutDisable = ref(false)
-
-const wsPath = 'ws://' + import.meta.env.VITE_BASE_PATH.substring(7)
-const videoSrc = 'rtsp://3.106.55.0:8554/mystream'
 
 const rtsp1 = 'rtsp://127.0.0.1:8554/stream'
 
@@ -242,17 +244,17 @@ onUnmounted(() => {
 })
 
 const setRTSP = () => {
+  console.log('rtsp set')
   new JSMpeg.Player('ws://localhost:9999/rtsp?url=' + btoa(rtsp1), {
-    canvas: document.getElementById('canvas-1')
+    canvas1: document.getElementById('canvas-1'),
+    // canvas2: document.getElementById('canvas-2'),
   })
 }
 
 onMounted(async() => {
   await getTasks()
-  if (taskList.value.length === 0) {
-    streamLayoutDisable.value = true
-  }
-  setRTSP()
+
+  // setRTSP()
 })
 
 </script>

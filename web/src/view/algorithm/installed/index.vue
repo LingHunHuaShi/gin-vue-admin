@@ -12,8 +12,6 @@ const taskRef = ref(null)
 const currentAlgoName = ref('defaultName')
 const currentAlgoId = ref(-1)
 const propsLoaded = ref(false)
-const addDisabled = ref(false)
-const maxTaskNumber = 3
 const addBtnText = ref('新建任务')
 
 const taskData = ref([])
@@ -48,10 +46,6 @@ const getTaskNumber = async() => {
   await queryOngoingTask().then(res => {
     taskData.value = res.data
   })
-  if (taskData.value.length >= maxTaskNumber) {
-    addDisabled.value = true
-    addBtnText.value = '任务数量达到上限'
-  }
 }
 
 onMounted(() => {
@@ -117,7 +111,7 @@ onMounted(() => {
             <br>
             <div class="align-right">
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
-              <el-button :disabled="addDisabled" type="primary" class="el-button" @click="showTaskDialog(algorithm)">{{ addBtnText }}</el-button>
+              <el-button type="primary" class="el-button" @click="showTaskDialog(algorithm)">{{ addBtnText }}</el-button>
             </div>
           </div>
         </el-card>
