@@ -3,10 +3,8 @@ package system
 import (
 	"errors"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/initialize"
+	//"github.com/flipped-aurora/gin-vue-admin/server/initialize"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
-	"os"
-	"os/exec"
 )
 
 /*
@@ -105,6 +103,7 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 	return Container, err
 }
 
+/*
 func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	var task system.SysTask
 	var url string = task.VideoSource
@@ -141,4 +140,4 @@ func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	}
 
 	return nil
-}
+}*/
