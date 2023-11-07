@@ -26,12 +26,15 @@ func (Api *TaskApi) CreateTask(c *gin.Context) {
 		response.FailWithMessage("创建任务失败", c)
 		return
 	}
-	err = taskService.StartTask(Task)
-	if err != nil {
-		global.GVA_LOG.Error("运行任务失败!", zap.Error(err))
-		response.FailWithMessage("运行任务失败", c)
-		return
-	}
+
+	/*
+		err = taskService.StartTask(Task)
+		if err != nil {
+			global.GVA_LOG.Error("运行任务失败!", zap.Error(err))
+			response.FailWithMessage("运行任务失败", c)
+			return
+		}*/
+
 	response.OkWithMessage("创建任务成功", c)
 }
 

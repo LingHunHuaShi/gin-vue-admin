@@ -2,12 +2,11 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/initialize"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"os"
 	"os/exec"
-	"time"
 )
 
 /*
@@ -108,20 +107,6 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 
 func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	var task system.SysTask
-	// if err := global.GVA_DB.Where("ID = ?", Task.ID).First(&task).Error; err != nil {
-	//return err
-	//}
-
-	// 修改任务的Status属性为0
-	// task.Status = 0
-
-	/*
-		// 更新任务到数据库
-		if err := global.GVA_DB.Save(&task).Error; err != nil {
-			return err
-		}
-	*/
-
 	var url string = task.VideoSource
 	var model_path string = "/data/yolo/Yolo_Rknn/model/RK3588/yolov5lite-g_train_coco.rknn"
 
@@ -134,27 +119,26 @@ func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	// 执行命令
-	err = cmd.Run()
-
-	// 在一定时间后终止命令（示例中为3秒）
-	go func() {
-		time.Sleep(120 * time.Second)
-		if err := cmd.Process.Kill(); err != nil {
-			fmt.Println("终止命令失败:", err)
-		}
-	}()
-
 	if err != nil {
-		fmt.Println("命令执行失败:", err)
-		return err
-	}
-	/*
-		task.Status = 1
-		if err := global.GVA_DB.Save(&task).Error; err != nil {
+		return errors.New("任务进程创建失败")
+	} else {
+		processManager := initialize.ProcessManager
+
+		Process := &system.SysInferenceProcess{
+			TaskID:  task.ID,
+			Command: cmd,
+		}
+
+		if err := processManager.Push_back(Process); err != nil {
 			return err
 		}
-	*/
+
+		// 执行进程
+		err = cmd.Run()
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
