@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"log"
 )
 
 type TaskApi struct{}
@@ -26,15 +27,6 @@ func (Api *TaskApi) CreateTask(c *gin.Context) {
 		response.FailWithMessage("创建任务失败", c)
 		return
 	}
-
-	/*
-		err = taskService.StartTask(Task)
-		if err != nil {
-			global.GVA_LOG.Error("运行任务失败!", zap.Error(err))
-			response.FailWithMessage("运行任务失败", c)
-			return
-		}*/
-
 	response.OkWithMessage("创建任务成功", c)
 }
 
@@ -127,4 +119,79 @@ func (Api *TaskApi) QueryOngoingTask(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(Container, "查询成功", c)
+}
+
+// 启动任务
+func (Api *TaskApi) StartTask(c *gin.Context) {
+	var Task system.SysTask
+	err := c.ShouldBindJSON(&Task)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		log.Println("Failed to bind task json!")
+		return
+	}
+	err = taskService.StartTask(Task)
+	if err != nil {
+		log.Println("Failed to start task.")
+		response.FailWithMessage("开始任务失败", c)
+		return
+	}
+	response.OkWithMessage("succeed to start inference", c)
+}
+
+// 暂停进程
+func (Api *TaskApi) PauseTask(c *gin.Context) {
+	var Task system.SysTask
+	err := c.ShouldBindJSON(&Task)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		log.Println("Failed to bind task json!")
+		return
+	}
+	err = taskService.StartTask(Task)
+	if err != nil {
+		log.Println("Failed to start process.")
+		response.FailWithMessage("开始任务失败", c)
+		return
+	}
+	log.Println("succeed to start inference")
+	response.OkWithMessage("succeed to start process", c)
+}
+
+// 唤醒进程
+func (Api *TaskApi) AwakeTask(c *gin.Context) {
+	var Task system.SysTask
+	err := c.ShouldBindJSON(&Task)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		log.Println("Failed to bind task json!")
+		return
+	}
+	err = taskService.AwakeTask(Task)
+	if err != nil {
+		log.Println("Failed to start task.")
+		response.FailWithMessage("暂停任务失败", c)
+		return
+	}
+	log.Println("succeed to pause process")
+	response.OkWithMessage("succeed to pause process", c)
+}
+
+// 唤醒进程
+func (Api *TaskApi) KillTask(c *gin.Context) {
+	var Task system.SysTask
+	err := c.ShouldBindJSON(&Task)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		log.Println("Failed to bind task json!")
+		return
+	}
+	err = taskService.KillTask(Task)
+	if err != nil {
+		log.Println("Failed to kill process.")
+		response.FailWithMessage("暂停任务失败", c)
+		return
+	}
+	log.Println("succeed to kill process")
+	response.OkWithMessage("succeed to kill process", c)
 }

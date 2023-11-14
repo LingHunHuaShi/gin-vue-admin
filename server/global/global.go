@@ -1,6 +1,7 @@
 package global
 
 import (
+	//"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"sync"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/timer"
@@ -30,6 +31,8 @@ var (
 
 	BlackCache local_cache.Cache
 	lock       sync.RWMutex
+
+	Process_Container *config.SysProcessContainer
 )
 
 // GetGlobalDBByDBName 通过名称获取db list中的db
@@ -48,4 +51,8 @@ func MustGetGlobalDBByDBName(dbname string) *gorm.DB {
 		panic("db no init")
 	}
 	return db
+}
+
+func InitGlobalProcessesContainer() *config.SysProcessContainer {
+	return new(config.SysProcessContainer)
 }

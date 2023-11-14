@@ -2,7 +2,12 @@ package system
 
 import (
 	"errors"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"log"
+	"os"
+	"os/exec"
+
 	//"github.com/flipped-aurora/gin-vue-admin/server/initialize"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 )
@@ -103,41 +108,63 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 	return Container, err
 }
 
-/*
 func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	var task system.SysTask
 	var url string = task.VideoSource
-	var model_path string = "/data/yolo/Yolo_Rknn/model/RK3588/yolov5lite-g_train_coco.rknn"
-
-	cmdName := "/data/yolo/Yolo_Rknn/Yolo_Rknn" // 替换为实际的二进制程序路径
-	cmdArgs := []string{model_path, url}        // 替换为实际的参数
+	var model_path string = "./model/RK3588/yolov5lite-g_train_coco.rknn"
+	cmdName := "./Yolo_Rknn"             // 替换为实际的二进制程序路径
+	cmdArgs := []string{model_path, url} // 替换为实际的参数
 	// 创建一个Cmd对象
 	cmd := exec.Command(cmdName, cmdArgs...)
+	cmd.Dir = "/data/yolo/Yolo_Rknn"
 	// 设置命令的标准输入、输出和错误
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
 	if err != nil {
 		return errors.New("任务进程创建失败")
 	} else {
-		processManager := initialize.ProcessManager
-
-		Process := &system.SysInferenceProcess{
+		processManager := global.Process_Container
+		Process := &config.SysInferenceProcess{
 			TaskID:  task.ID,
 			Command: cmd,
 		}
-
 		if err := processManager.Push_back(Process); err != nil {
 			return err
 		}
-
-		// 执行进程
-		err = cmd.Run()
-		if err != nil {
-			return err
-		}
 	}
-
 	return nil
-}*/
+}
+
+func (t *TaskService) PauseTask(Task system.SysTask) (err error) {
+	TaskID := Task.ID
+	processManager := global.Process_Container
+	err = processManager.Pause_process(TaskID)
+	if err != nil {
+		log.Println("Failed to pause process")
+		return err
+	}
+	return nil
+}
+
+func (t *TaskService) AwakeTask(Task system.SysTask) (err error) {
+	TaskID := Task.ID
+	processManager := global.Process_Container
+	err = processManager.Awake_process(TaskID)
+	if err != nil {
+		log.Println("Failed to wake up process")
+		return err
+	}
+	return nil
+}
+
+func (t *TaskService) KillTask(Task system.SysTask) (err error) {
+	TaskID := Task.ID
+	processManager := global.Process_Container
+	err = processManager.Kill_process(TaskID)
+	if err != nil {
+		log.Println("Failed to Kill process")
+		return err
+	}
+	return nil
+}

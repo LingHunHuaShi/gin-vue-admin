@@ -1,7 +1,8 @@
-package system
+package config
 
 import (
 	"errors"
+	"log"
 	"os/exec"
 	"sync"
 	"syscall"
@@ -26,11 +27,18 @@ func (container *SysProcessContainer) Push_back(process *SysInferenceProcess) er
 	if len(container.processes) >= MaxSize {
 		return errors.New("进程容器已满")
 	}
+	cmd := process.Command
+	err := cmd.Run()
+	if err != nil {
+		log.Println("Failed to exec command.")
+		return err
+	}
 	container.processes = append(container.processes, process)
+	log.Println("Succeed to exec command.")
 	return nil
 }
 
-func (container *SysProcessContainer) pause_process(TaskID uint) error {
+func (container *SysProcessContainer) Pause_process(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
@@ -45,7 +53,7 @@ func (container *SysProcessContainer) pause_process(TaskID uint) error {
 	return errors.New("无效的任务ID")
 }
 
-func (container *SysProcessContainer) kill_process(TaskID uint) error {
+func (container *SysProcessContainer) Kill_process(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
@@ -60,7 +68,7 @@ func (container *SysProcessContainer) kill_process(TaskID uint) error {
 	return errors.New("无效的任务ID")
 }
 
-func (container *SysProcessContainer) awake_process(TaskID uint) error {
+func (container *SysProcessContainer) Awake_process(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
