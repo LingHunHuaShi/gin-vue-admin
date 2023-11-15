@@ -6,18 +6,18 @@ const streamNumber = ref(1)
 const rtspStreams = ref([
   'rtsp://192.168.6.209:8554/stream',
   'rtsp://192.168.6.209:8554/stream2',
-  'rtsp://192.168.6.209:8554/stream3',
-  'rtsp://192.168.6.209:8554/stream4',
-
 ])
 
 const selectDialogVisible = ref(false)
-const selectedStreamOrder = ref('')
+const selectedStreamOrder = ref(0)
 
 const setRTSP = (streamOrder = 0) => {
-  console.log('rtsp set')
-  new JSMpeg.Player(webSocketUrl.value + btoa(rtspStreams[streamOrder]), {
+  console.log('rtsp set:', rtspStreams.value[streamOrder])
+  new JSMpeg.Player(webSocketUrl.value + btoa(rtspStreams.value[streamOrder]), {
     canvas: document.getElementById('canvas-'+streamOrder ),
+  })
+  new JSMpeg.Player(webSocketUrl.value + btoa(rtspStreams.value[streamOrder]), {
+    canvas: document.getElementById('canvas'),
   })
 }
 

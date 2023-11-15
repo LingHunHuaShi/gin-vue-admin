@@ -20,6 +20,7 @@ const dialogData = ref({})
 
 const statusDialogVisible = ref(false)
 const currentTask = ref({})
+const isLoading = ref(true)
 
 const showInputDialog = () => {
   dialogKey.value = 'add'
@@ -157,8 +158,22 @@ const showStatusDialog = (task) => {
   console.log('cT:', currentTask.value)
 }
 
-const pauseTask = () => {
+const pauseTask = async() => {
+  isLoading.value = true
+  await pauseProcess(currentTask)
+  // isLoading.value = false
+}
 
+const awakeTask = async() => {
+  await awakeProcess(currentTask)
+}
+
+const startTask = async() => {
+  await startProcess(currentTask)
+}
+
+const killTask = async() => {
+  await killProcess(currentTask)
 }
 
 onMounted(() => {
@@ -215,7 +230,7 @@ onMounted(() => {
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog v-model="statusDialogVisible" title="任务状态管理">
+    <el-dialog v-loading="isLoading" v-model="statusDialogVisible" title="任务状态管理">
       <el-text size="large">当前状态：{{ currentTask.status }}</el-text>
       <br>
       <template #footer>
@@ -223,18 +238,28 @@ onMounted(() => {
             v-if="currentTask.status === '正在运行'"
             icon="videoPause"
             type="warning"
+            @click="pauseTask"
         >暂停
         </el-button>
         <el-button
             v-if="currentTask.status === '正在运行' || currentTask.status === '异常'"
             icon="close"
             type="danger"
+            @click="killProcess"
         >终止
         </el-button>
         <el-button
-            v-if="currentTask.status === '已暂停' || currentTask.status === '已终止'"
+            v-if="currentTask.status === '已暂停'"
             icon="refreshLeft"
             type="success"
+            @click="awakeProcess"
+        >启动
+        </el-button>
+        <el-button
+            v-if="currentTask.status === '已终止'"
+            icon="refreshLeft"
+            type="success"
+            @click="startProcess"
         >启动
         </el-button>
       </template>

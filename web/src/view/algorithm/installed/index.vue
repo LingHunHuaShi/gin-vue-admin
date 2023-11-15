@@ -227,6 +227,7 @@ onMounted(() => {
             <span>更新时间：{{ algorithm.UpdatedAt.substring(0, 10) + " " + algorithm.UpdatedAt.substring(11, 19) }}</span>
             <br>
             <div class="align-right">
+              <el-button type="danger" icon="documentDelete">卸载模型</el-button>
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
               <el-button type="primary" class="el-button" @click="showTaskDialog(algorithm)">{{ addBtnText }}</el-button>
             </div>
