@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from 'vue'
 import TaskInputSheet from './components/taskInputSheet.vue'
-import { deleteTask, queryOngoingTask } from '@/api/task'
+import { deleteTask, queryOngoingTask, killProcess, awakeProcess, pauseProcess, startProcess } from '@/api/task'
 import { findAlgorithmById } from '@/api/algorithm'
 import { ElMessage } from 'element-plus'
 import { findNickNameByUuid } from '@/api/user'
@@ -18,7 +18,11 @@ const addDisabled = ref(false)
 const dialogKey = ref('add')
 const dialogData = ref({})
 
+const statusDialogVisible = ref(false)
+const currentTask = ref({})
+
 const showInputDialog = () => {
+  dialogKey.value = 'add'
   taskDialogVisible.value = true
 }
 
@@ -30,6 +34,7 @@ const closeDialog = () => {
 const submitDialog = () => {
   taskRef.value.submitForm()
   taskDialogVisible.value = false
+  location.reload()
 }
 
 const getResolution = (num) => {
@@ -62,6 +67,21 @@ const getIntensity = (num) => {
   }
 }
 
+const getStatus = (num) => {
+  switch (num) {
+    case 0:
+      return '正在运行'
+    case 1:
+      return '已暂停'
+    case 2:
+      return '已终止'
+    case -1:
+      return '异常'
+    default:
+      return 'Unknown'
+  }
+}
+
 // TODO: fix bug that backend gets EOF error
 const getAlgorithmNameById = async(id) => {
   const res = await findAlgorithmById({ ID: id })
@@ -80,6 +100,7 @@ const processTaskList = async(result) => {
     const resolution = getResolution(item.resolution)
     const intensity = getIntensity(item.intensity)
     const algorithmName = await getAlgorithmNameById(item.algorithmId)
+    const status = getStatus(item.status)
 
     return {
       taskID: item.ID,
@@ -91,6 +112,7 @@ const processTaskList = async(result) => {
       algorithmID: item.algorithmId,
       intensity,
       algorithmName,
+      status,
     }
   }))
 }
@@ -98,7 +120,8 @@ const processTaskList = async(result) => {
 const getTaskList = async() => {
   const result = await queryOngoingTask()
   console.log('result:', result.data)
-
+  // if (result.data.length === 0)
+  //   return
   await processTaskList(result)
   console.log('taskData:', taskData.value)
   taskNumber.value = taskData.value.length
@@ -128,6 +151,16 @@ const editTask = (scope) => {
   showInputDialog()
 }
 
+const showStatusDialog = (task) => {
+  currentTask.value = task
+  statusDialogVisible.value = true
+  console.log('cT:', currentTask.value)
+}
+
+const pauseTask = () => {
+
+}
+
 onMounted(() => {
   getTaskList()
 })
@@ -146,27 +179,34 @@ onMounted(() => {
         row-key="taskID"
         style="width: 100%"
       >
-        <el-table-column label="任务ID" min-width="180" prop="taskID" />
-        <el-table-column align="left" label="发起人" min-width="180" prop="nickName" />
+        <el-table-column label="任务ID" min-width="120" prop="taskID" />
+        <el-table-column align="left" label="发起人" min-width="150" prop="nickName" />
         <el-table-column align="left" label="视频源" min-width="180" prop="videoSource" />
         <el-table-column align="left" label="创建时间" min-width="180" prop="CreatedAt" />
-        <el-table-column align="left" label="分辨率" min-width="180" prop="resolution" />
+        <el-table-column align="left" label="分辨率" min-width="150" prop="resolution" />
 <!--        <el-table-column align="left" label="任务容器算法ID" min-width="180" prop="algorithmID" />-->
         <el-table-column align="left" label="任务容器算法名称" min-width="180" prop="algorithmName" />
-        <el-table-column align="left" label="任务粒度" min-width="180" prop="intensity" />
-        <el-table-column align="left" lebal="任务状态" min-width="180" prop="status" />
-        <el-table-column align="left" label="操作" width="260">
+        <el-table-column align="left" label="任务粒度" min-width="120" prop="intensity" />
+        <el-table-column align="left" label="任务状态" min-width="150" prop="status" />
+        <el-table-column align="left" label="操作" width="280">
           <template #default="scope">
             <el-button
               icon="edit"
               type="primary"
               link
               @click="editTask(scope.row)"
-            >编辑
+            >编辑信息
+            </el-button>
+            <el-button
+                link
+                icon="open"
+                type="primary"
+                @click="showStatusDialog(scope.row)"
+            >状态管理
             </el-button>
             <el-button
               icon="delete"
-              type="primary"
+              type="danger"
               link
               @click="deleteTaskInForm(scope.row.taskID)"
             >删除
@@ -175,6 +215,30 @@ onMounted(() => {
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog v-model="statusDialogVisible" title="任务状态管理">
+      <el-text size="large">当前状态：{{ currentTask.status }}</el-text>
+      <br>
+      <template #footer>
+        <el-button
+            v-if="currentTask.status === '正在运行'"
+            icon="videoPause"
+            type="warning"
+        >暂停
+        </el-button>
+        <el-button
+            v-if="currentTask.status === '正在运行' || currentTask.status === '异常'"
+            icon="close"
+            type="danger"
+        >终止
+        </el-button>
+        <el-button
+            v-if="currentTask.status === '已暂停' || currentTask.status === '已终止'"
+            icon="refreshLeft"
+            type="success"
+        >启动
+        </el-button>
+      </template>
+    </el-dialog>
     <el-dialog v-model="taskDialogVisible" :title="taskTitle">
       <task-input-sheet ref="taskRef" :key="dialogKey" :scope="dialogData" />
       <template #footer>

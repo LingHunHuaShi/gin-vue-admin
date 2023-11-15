@@ -62,3 +62,35 @@ export const queryOngoingTask = (data) => {
     data
   })
 }
+
+export const startProcess = (data) => {
+  return service({
+    url: '/task/startProcess' ,
+    method: 'post',
+    data
+  })
+}
+
+export const pauseProcess = (data) => {
+  return service({
+    url: '/task/pauseProcess',
+    method: 'post',
+    data
+  })
+}
+
+export const awakeProcess = (data) => {
+  return service({
+    url: '/task/awakeProcess',
+    method: 'post',
+    data
+  })
+}
+
+export const killProcess = (data) => {
+  return service({
+    url: '/task/killProcess',
+    method: 'post',
+    data
+  })
+}

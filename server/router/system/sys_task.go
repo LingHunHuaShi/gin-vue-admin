@@ -18,9 +18,9 @@ func (s *TaskRouter) InitTaskRouter(Router *gin.RouterGroup) {
 		TaskRouter.GET("queryOngoingTask", TaskApi.QueryOngoingTask)
 		TaskRouter.PUT("updateTask", TaskApi.UpdateTask)
 		TaskRouter.DELETE("deleteTask", TaskApi.DeleteTask)
-		TaskRouter.GET("startProcess", TaskApi.StartTask)
-		TaskRouter.GET("pauseProcess", TaskApi.PauseTask)
-		TaskRouter.GET("awakeProcess", TaskApi.AwakeTask)
-		TaskRouter.GET("killProcess", TaskApi.KillTask)
+		TaskRouter.POST("startProcess", TaskApi.StartTask)
+		TaskRouter.POST("pauseProcess", TaskApi.PauseTask)
+		TaskRouter.POST("awakeProcess", TaskApi.AwakeTask)
+		TaskRouter.POST("killProcess", TaskApi.KillTask)
 	}
 }
