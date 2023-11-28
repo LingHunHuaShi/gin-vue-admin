@@ -110,7 +110,8 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 
 func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 	var task system.SysTask
-	var url string = task.VideoSource
+	//var url string = task.VideoSource
+	var url string = "rtsp://192.168.6.209:8554/stream"
 	var model_path string = "./model/RK3588/yolov5lite-g_train_coco.rknn"
 	cmdName := "./Yolo_Rknn"             // 替换为实际的二进制程序路径
 	cmdArgs := []string{model_path, url} // 替换为实际的参数

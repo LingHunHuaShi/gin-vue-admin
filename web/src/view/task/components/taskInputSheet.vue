@@ -71,6 +71,7 @@ export default defineComponent({
         resolution: '',
         algorithmId: '',
         intensity: null,
+        status: 2,
       },
       rules: {
         uuid: [{

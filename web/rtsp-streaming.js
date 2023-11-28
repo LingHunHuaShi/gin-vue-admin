@@ -5,4 +5,5 @@ let port = 9999
 new RTSP2web({
   port,
   audio: false,
+  webplayer: 'flv',
 })

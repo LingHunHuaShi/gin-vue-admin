@@ -28,7 +28,7 @@ func (container *SysProcessContainer) PushBack(process *SysInferenceProcess) err
 		return errors.New("进程容器已满")
 	}
 	cmd := process.Command
-	err := cmd.Run()
+	err := cmd.Start()
 	if err != nil {
 		log.Println("Failed to exec command.")
 		return err

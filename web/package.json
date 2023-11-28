@@ -3,7 +3,7 @@
     "version": "2.5.6",
     "private": true,
     "scripts": {
-        "serve": "vite --host --mode development && node rtsp-streaming.js",
+        "serve": "vite --host --mode development",
         "test": "node rtsp-streaming.js",
         "build": "vite build --mode production",
         "limit-build": "npm install increase-memory-limit-fixbug cross-env -g && npm run fix-memory-limit && node ./limit && npm run build",
@@ -17,6 +17,7 @@
         "core-js": "^3.6.5",
         "echarts": "5.3.2",
         "element-plus": "^2.3.4",
+        "flv.js": "^1.6.2",
         "highlight.js": "^11.8.0",
         "jsmpeg": "^1.0.0",
         "marked": "^5.1.0",

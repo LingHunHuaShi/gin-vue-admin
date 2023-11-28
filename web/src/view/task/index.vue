@@ -75,7 +75,7 @@ const getStatus = (num) => {
     case 1:
       return '已暂停'
     case 2:
-      return '已终止'
+      return '未启动'
     case -1:
       return '异常'
     default:
@@ -235,28 +235,24 @@ onMounted(() => {
       <br>
       <template #footer>
         <el-button
-            v-if="currentTask.status === '正在运行'"
             icon="videoPause"
             type="warning"
             @click="pauseTask"
         >暂停
         </el-button>
         <el-button
-            v-if="currentTask.status === '正在运行' || currentTask.status === '异常'"
             icon="close"
             type="danger"
             @click="killProcess"
         >终止
         </el-button>
         <el-button
-            v-if="currentTask.status === '已暂停'"
             icon="refreshLeft"
-            type="success"
+            type="primary"
             @click="awakeProcess"
-        >启动
+        >唤醒
         </el-button>
         <el-button
-            v-if="currentTask.status === '已终止'"
             icon="refreshLeft"
             type="success"
             @click="startProcess"
