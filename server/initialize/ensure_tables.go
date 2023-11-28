@@ -61,6 +61,7 @@ func (e *ensureTables) MigrateTable(ctx context.Context) (context.Context, error
 		sysModel.SysAlgorithm{},
 		sysModel.SysTask{},
 		sysModel.SysCase{},
+		sysModel.SysVideoSource{},
 	}
 	for _, t := range tables {
 		_ = db.AutoMigrate(&t)
@@ -101,6 +102,7 @@ func (e *ensureTables) TableCreated(ctx context.Context) bool {
 		sysModel.SysAlgorithm{},
 		sysModel.SysTask{},
 		sysModel.SysCase{},
+		sysModel.SysVideoSource{},
 	}
 	yes := true
 	for _, t := range tables {

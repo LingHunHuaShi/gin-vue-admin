@@ -54,6 +54,7 @@ func RegisterTables() {
 		system.SysAlgorithm{},
 		system.SysTask{},
 		system.SysCase{},
+		system.SysVideoSource{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Error(err))

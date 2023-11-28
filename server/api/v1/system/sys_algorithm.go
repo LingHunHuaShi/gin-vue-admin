@@ -160,3 +160,19 @@ func (s *AlgorithmApi) GetAlgorithms(c *gin.Context) {
 	}
 	response.OkWithMessage("成功云端算法获取!", c)
 }
+
+// DownloadAlgorith 下载算法
+func (s *AlgorithmApi) DownloadAlgorithm(c *gin.Context) {
+	var algorithm system.SysAlgorithm
+	err := c.ShouldBindJSON(&algorithm)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err = algorithmService.DownloadAlgorithms(algorithm.ID)
+	if err != nil {
+		global.GVA_LOG.Error("下载算法失败", zap.Error(err))
+		response.FailWithMessage("下载算法失败"+err.Error(), c)
+	}
+	response.OkWithMessage("下载算法成功", c)
+}
