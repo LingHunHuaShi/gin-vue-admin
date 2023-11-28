@@ -20,7 +20,7 @@ type SysProcessContainer struct {
 	processes []*SysInferenceProcess
 }
 
-func (container *SysProcessContainer) Push_back(process *SysInferenceProcess) error {
+func (container *SysProcessContainer) PushBack(process *SysInferenceProcess) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
@@ -38,7 +38,7 @@ func (container *SysProcessContainer) Push_back(process *SysInferenceProcess) er
 	return nil
 }
 
-func (container *SysProcessContainer) Pause_process(TaskID uint) error {
+func (container *SysProcessContainer) PauseProcess(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
@@ -53,7 +53,7 @@ func (container *SysProcessContainer) Pause_process(TaskID uint) error {
 	return errors.New("无效的任务ID")
 }
 
-func (container *SysProcessContainer) Kill_process(TaskID uint) error {
+func (container *SysProcessContainer) KillProcess(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 
@@ -68,7 +68,7 @@ func (container *SysProcessContainer) Kill_process(TaskID uint) error {
 	return errors.New("无效的任务ID")
 }
 
-func (container *SysProcessContainer) Awake_process(TaskID uint) error {
+func (container *SysProcessContainer) AwakeProcess(TaskID uint) error {
 	container.mutex.Lock()
 	defer container.mutex.Unlock()
 

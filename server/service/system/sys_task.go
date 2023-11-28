@@ -129,7 +129,7 @@ func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 			TaskID:  task.ID,
 			Command: cmd,
 		}
-		if err := processManager.Push_back(Process); err != nil {
+		if err := processManager.PushBack(Process); err != nil {
 			return err
 		}
 	}
@@ -139,7 +139,7 @@ func (t *TaskService) StartTask(Task system.SysTask) (err error) {
 func (t *TaskService) PauseTask(Task system.SysTask) (err error) {
 	TaskID := Task.ID
 	processManager := global.Process_Container
-	err = processManager.Pause_process(TaskID)
+	err = processManager.PauseProcess(TaskID)
 	if err != nil {
 		log.Println("Failed to pause process")
 		return err
@@ -150,7 +150,7 @@ func (t *TaskService) PauseTask(Task system.SysTask) (err error) {
 func (t *TaskService) AwakeTask(Task system.SysTask) (err error) {
 	TaskID := Task.ID
 	processManager := global.Process_Container
-	err = processManager.Awake_process(TaskID)
+	err = processManager.AwakeProcess(TaskID)
 	if err != nil {
 		log.Println("Failed to wake up process")
 		return err
@@ -161,7 +161,7 @@ func (t *TaskService) AwakeTask(Task system.SysTask) (err error) {
 func (t *TaskService) KillTask(Task system.SysTask) (err error) {
 	TaskID := Task.ID
 	processManager := global.Process_Container
-	err = processManager.Kill_process(TaskID)
+	err = processManager.KillProcess(TaskID)
 	if err != nil {
 		log.Println("Failed to Kill process")
 		return err
