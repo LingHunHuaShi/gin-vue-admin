@@ -5,6 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import { queryOngoingTask } from '@/api/task'
 import { queryAllAlgorithm } from '@/api/algorithm'
 import TaskInput from './components/taskInput.vue'
+import axios from "axios";
 
 const installed = ref([])
 const dialogVisible = ref(false)
@@ -13,6 +14,36 @@ const currentAlgoName = ref('defaultName')
 const currentAlgoId = ref(-1)
 const propsLoaded = ref(false)
 const addBtnText = ref('新建任务')
+
+const serverAddress = ref('http://192.168.67.212:8888')
+
+const terminalForm = ref({
+  cpu_framework: 'X86',
+  cpu_model: 'AMD Ryzen™ Embedded V2748 with Radeon™ Graphics',
+  ram: 1024,
+  rom: 8192,
+  arithmetic: 'yolov5s',
+  arithmetic_Version: '1.0',
+})
+
+const LatestAlgorithm = ref({
+  algorithmId: null,
+  algorithmName: null,
+  algorithmVersion: null,
+  algorithmDownloadlink: null,
+  algorithmSize: null,
+  algorithmDescription: null,
+  algorithmMd5: null,
+  createTime: null,
+  cpuFramwork: null,
+  cpuModel: null,
+  ram: null,
+  rom: null,
+})
+
+const TerminAlgorithmUpdate = ref(false)
+const ari_details = ref(false)
+const title = ref('')
 
 const taskData = ref([])
 const getInstalledAlgorithm = async() => {
@@ -48,9 +79,45 @@ const getTaskNumber = async() => {
   })
 }
 
+const loginCloud = async() => {
+  console.log(serverAddress.value+'/BoxesUserLogin')
+  const res = await axios.post(serverAddress.value+'/BoxesUserLogin', {
+    username: 'zhangsan',
+    password: '123456',
+    code: null,
+    uuid: null,
+    terminalForm: terminalForm,
+  }).catch(err => console.log(err))
+
+  console.log('sssssss', TerminAlgorithmUpdate.value)
+
+  if (res.data.LatestAlgorithm!=null){
+    if (terminalForm.value.arithmetic_Version < res.data.LatestAlgorithm.algorithmVersion) {
+      // this.TerminArithmUpdateTip(res.LatestAlgorithm)
+      LatestAlgorithm.value = res.data.LatestAlgorithm
+      LatestAlgorithm.value.cpuModel = res.data.LatestAlgorithm.cpuModel.split(',')
+      TerminAlgorithmUpdate.value = true
+    }
+  }
+
+}
+
+const latestAlgorithmDetails = () => {
+  ari_details.value = true
+  title.value = "算法详情——" + LatestAlgorithm.value.algorithmName
+}
+
+const getUpdates = async() => {
+}
+
+const atiDetailsComfrim = () => {
+  ari_details.value = false
+}
+
 onMounted(() => {
   getInstalledAlgorithm()
   getTaskNumber()
+  loginCloud()
 })
 
 // const usedNPUCore = computed(() => {
@@ -75,24 +142,74 @@ onMounted(() => {
         <el-button @click="cancelDialog">取消</el-button>
       </div>
     </el-dialog>
-<!--    <el-row class="algorithm-row">-->
-<!--      <el-col :span="8" class="algorithm-col">-->
-<!--        <el-card class="conclusion-card card" :gutter="20" type="flex">-->
-<!--          <div slot="header">-->
-<!--            <span>核心使用情况</span>-->
-<!--            <br>-->
-<!--            <br>-->
-<!--          </div>-->
-<!--          <div class="content-box">-->
-<!--            <span style="line-height: 35px">已使用:{{ usedNPUCore }} / 3</span>-->
-<!--            <br>-->
-<!--            <div v-for="algorithm in installed" :key="algorithm" class="algorithm-text">-->
-<!--              {{ algorithm.name }} 使用核心数：{{ algorithm.stream_number }}-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </el-card>-->
-<!--      </el-col>-->
-<!--    </el-row>-->
+
+    <!--    算法更新提示框-->
+    <el-dialog title="新算法已发布" v-model="TerminAlgorithmUpdate" width="400px" append-to-body
+               >
+      <div style="text-align: center">
+        <label
+            v-text="'您的设备当前算法及版本为:  ' + terminalForm.arithmetic + '-' + terminalForm.arithmetic_Version"></label>
+        <br/>
+        <label
+            v-text="'云端已发布该算法新版本:  ' + LatestAlgorithm.algorithmName +'-'+ LatestAlgorithm.algorithmVersion"></label>
+        <el-button
+            size="mini"
+            type="text"
+            icon="Search"
+            @click="latestAlgorithmDetails"
+            v-hasPermi="['']"
+        >查看详情
+        </el-button>
+        <br/>
+        <br/>
+        <label v-text="'是否立刻更新算法？'"></label>
+
+
+      </div>
+
+
+      <div slot="footer" class="dialog-footer align-right" style="margin-top: 20px">
+        <el-button @click="cancel">以后再说</el-button>
+
+        <el-button @click="updateComfirm" type="primary">立刻更新</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 查看算法详情对话框 -->
+    <el-dialog :title="title" v-model="ari_details" width="550px" append-to-body>
+      <el-form label-width="150px">
+        <el-form-item label="算法名:" prop="algorithmName">
+          <el-tag type="primary" v-text="LatestAlgorithm.algorithmName" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="算法版本:" prop="algorithmVersion">
+          <el-tag type="primary" v-text="LatestAlgorithm.algorithmVersion" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="算法模型文件大小:" prop="algorithmSize">
+          <el-tag type="primary" v-text="LatestAlgorithm.algorithmSize" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="发布时间:" prop="algorithmSize">
+          <el-tag type="primary" v-text="LatestAlgorithm.createTime" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="所支持cpu框架:" prop="cpuFramwork">
+          <el-tag type="primary" v-text="LatestAlgorithm.cpuFramwork" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="所支持cpu型号:" prop="cpuModel">
+          <el-tag type="primary" v-for="item in LatestAlgorithm.cpuModel" style="margin-left: 10px">{{ item }}</el-tag>
+        </el-form-item>
+        <el-form-item label="最低ram要求:" prop="ram">
+          <el-tag type="primary" v-text="LatestAlgorithm.ram + 'MB'" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="最低rom要求:" prop="rom">
+          <el-tag type="primary" v-text="LatestAlgorithm.rom + 'MB'" style="margin-left: 10px"/>
+        </el-form-item>
+        <el-form-item label="算法描述:" prop="algorithmDescription">
+          <label v-text="LatestAlgorithm.algorithmDescription" style="margin-left: 10px"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer align-right">
+        <el-button @click="atiDetailsComfrim">确定</el-button>
+      </div>
+    </el-dialog>
 
     <el-row class="algorithm-row">
       <span class="title">已部署算法</span>
@@ -110,6 +227,7 @@ onMounted(() => {
             <span>更新时间：{{ algorithm.UpdatedAt.substring(0, 10) + " " + algorithm.UpdatedAt.substring(11, 19) }}</span>
             <br>
             <div class="align-right">
+              <el-button type="danger" icon="documentDelete">卸载模型</el-button>
               <!--              <el-button type="primary" class="el-button" @click="goToDetail">管理</el-button>-->
               <el-button type="primary" class="el-button" @click="showTaskDialog(algorithm)">{{ addBtnText }}</el-button>
             </div>

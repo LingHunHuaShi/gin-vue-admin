@@ -54,7 +54,7 @@ export default defineComponent({
     key: {
       type: String,
       required: true,
-      default: 'edit',
+      default: 'add',
     },
     scope: {
       type: Object,

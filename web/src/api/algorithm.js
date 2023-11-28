@@ -55,4 +55,6 @@ export const queryAllAlgorithm = (data) => {
     url: '/algorithm/queryAllAlgorithm',
     method: 'get',
   })
+
+
 }

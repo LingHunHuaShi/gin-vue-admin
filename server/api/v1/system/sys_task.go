@@ -177,7 +177,7 @@ func (Api *TaskApi) AwakeTask(c *gin.Context) {
 	response.OkWithMessage("succeed to pause process", c)
 }
 
-// 唤醒进程
+// 杀死进程
 func (Api *TaskApi) KillTask(c *gin.Context) {
 	var Task system.SysTask
 	err := c.ShouldBindJSON(&Task)

@@ -34,3 +34,4 @@ web/pnpm-lock.yaml
 server/database/\gva.db
 server/config.yaml
 *.yaml
+*.db
