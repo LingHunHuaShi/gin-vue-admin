@@ -130,7 +130,7 @@ func (Api *TaskApi) StartTask(c *gin.Context) {
 		log.Println("Failed to bind task json!")
 		return
 	}
-	err = taskService.StartTask(Task)
+	err = taskService.StartTask(Task.ID)
 	if err != nil {
 		log.Println("Failed to start task.")
 		response.FailWithMessage("开始任务失败", c)

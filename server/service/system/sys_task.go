@@ -108,11 +108,23 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 	return Container, err
 }
 
-func (t *TaskService) StartTask(Task system.SysTask) (err error) {
+func (t *TaskService) StartTask(TaskID uint) (err error) {
 	var task system.SysTask
-	//var url string = task.VideoSource
-	var url string = "rtsp://192.168.6.209:8554/stream"
-	var model_path string = "./model/RK3588/yolov5lite-g_train_coco.rknn"
+	var algorithm system.SysAlgorithm
+	err = global.GVA_DB.Where("ID = ?", TaskID).First(&task).Error
+	if err != nil {
+		log.Println("任务不存在")
+		return err
+	}
+	var url string = task.VideoSource
+	err = global.GVA_DB.Where("ID = ?", task.AlgorithmID).First(&algorithm).Error
+	if err != nil {
+		log.Println("算法存储路径错误")
+		return err
+	}
+
+	var model_path string = algorithm.StoragePath
+
 	cmdName := "./Yolo_Rknn"             // 替换为实际的二进制程序路径
 	cmdArgs := []string{model_path, url} // 替换为实际的参数
 	// 创建一个Cmd对象
