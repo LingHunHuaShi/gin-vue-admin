@@ -2,12 +2,9 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"gorm.io/gorm"
-	"log"
-	"os"
 	"time"
 )
 
@@ -129,58 +126,3 @@ func (algorithmService *AlgorithmService) GetAlgorithms(algorithms []system.SysA
 
 	return nil
 }
-
-// DownloadAlgorithms  获取云端的算法
-// @return error
-func (algorithmService *AlgorithmService) DownloadAlgorithms(algorithmID uint) error {
-	var algorithm system.SysAlgorithm
-	err := global.GVA_DB.First(&algorithm, algorithmID).Error
-	if err != nil {
-		log.Println("数据库查询失败.")
-		return err
-	}
-
-	var path string = "/data/yolo/" + algorithm.AlgorithmName
-
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// 文件夹不存在则创建
-		err := os.MkdirAll(path, 0755)
-		if err != nil {
-			fmt.Println("Error creating directory:", err)
-			return err
-		}
-		fmt.Println("Directory created:", path)
-	} else {
-		// 文件夹存在 删除创建该文件夹
-		err := os.RemoveAll(path)
-		if err != nil {
-			fmt.Println("Error removing directory:", err)
-			return err
-		}
-
-		err = os.MkdirAll(path, 0755)
-		if err != nil {
-			fmt.Println("Error creating directory:", err)
-			return err
-		}
-		fmt.Println("Directory deleted and recreated:", path)
-	}
-
-	algorithm.StoragePath = path
-	// TO DO DOWNLOAD THE ALGORITHM FORM THE CLOUD.
-	// ...
-	// ...
-	// ...
-
-	algorithm.Downloaded = true
-	err = global.GVA_DB.Updates(&algorithm).Error
-	if err != nil {
-		log.Println("数据库更新失败")
-		return err
-	}
-	return nil
-}
-
-// downloadhandle
-// do something
-// func downloadHandle()

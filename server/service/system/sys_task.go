@@ -2,27 +2,27 @@ package system
 
 import (
 	"errors"
+	//	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"log"
 	"os"
 	"os/exec"
-
 	//"github.com/flipped-aurora/gin-vue-admin/server/initialize"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 )
 
 /*
 type SysTask struct {
-	global.GVA_MODEL
-	TaskID       uint      `json:"taskID" gorm:"default:0;primaryKey;autoIncrement;index;comment:任务ID"` // 任务ID
-	UUID         uuid.UUID `json:"uuid" gorm:"comment:用户UUID"`                                          // 用户UUID
-	VideoSource  string    `json:"videoSource" gorm:"comment:视频源"`                                      // 视频源
-	CreationDate time.Time `json:"creationDate" gorm:"comment:创建时间"`
-	Resolution   int       `json:"resolution" gorm:"comment:分辨率等级"`
-	AlgorithmID  uint      `json:"algorithmId" gorm:"comment:任务容器算法ID"`
-	Intensity    int       `json:"intensity" gorm:"comment:任务粒度"`
-	Status       int       `json:"status" gorm:"comment:任务状态"`
+        global.GVA_MODEL
+        TaskID       uint      `json:"taskID" gorm:"default:0;primaryKey;autoIncrement;index;comment:任务ID"` // 任务ID
+        UUID         uuid.UUID `json:"uuid" gorm:"comment:用户UUID"`                                          // 用户UUID
+        VideoSource  string    `json:"videoSource" gorm:"comment:视频源"`                                      // 视频源
+        CreationDate time.Time `json:"creationDate" gorm:"comment:创建时间"`
+        Resolution   int       `json:"resolution" gorm:"comment:分辨率等级"`
+        AlgorithmID  uint      `json:"algorithmId" gorm:"comment:任务容器算法ID"`
+        Intensity    int       `json:"intensity" gorm:"comment:任务粒度"`
+        Status       int       `json:"status" gorm:"comment:任务状态"`
 }
 */
 
@@ -108,23 +108,14 @@ func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error
 	return Container, err
 }
 
-func (t *TaskService) StartTask(TaskID uint) (err error) {
+func (t *TaskService) StartTask(taskID uint) (err error) {
 	var task system.SysTask
-	var algorithm system.SysAlgorithm
-	err = global.GVA_DB.Where("ID = ?", TaskID).First(&task).Error
+	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
 	if err != nil {
-		log.Println("任务不存在")
-		return err
+		return errors.New("任务不存在")
 	}
 	var url string = task.VideoSource
-	err = global.GVA_DB.Where("ID = ?", task.AlgorithmID).First(&algorithm).Error
-	if err != nil {
-		log.Println("算法存储路径错误")
-		return err
-	}
-
-	var model_path string = algorithm.StoragePath
-
+	var model_path string = "./model/yolov5lite-g_train_coco.rknn"
 	cmdName := "./Yolo_Rknn"             // 替换为实际的二进制程序路径
 	cmdArgs := []string{model_path, url} // 替换为实际的参数
 	// 创建一个Cmd对象
@@ -149,10 +140,9 @@ func (t *TaskService) StartTask(TaskID uint) (err error) {
 	return nil
 }
 
-func (t *TaskService) PauseTask(Task system.SysTask) (err error) {
-	TaskID := Task.ID
+func (t *TaskService) PauseTask(taskID uint) (err error) {
 	processManager := global.Process_Container
-	err = processManager.PauseProcess(TaskID)
+	err = processManager.PauseProcess(taskID)
 	if err != nil {
 		log.Println("Failed to pause process")
 		return err
@@ -160,10 +150,9 @@ func (t *TaskService) PauseTask(Task system.SysTask) (err error) {
 	return nil
 }
 
-func (t *TaskService) AwakeTask(Task system.SysTask) (err error) {
-	TaskID := Task.ID
+func (t *TaskService) AwakeTask(taskID uint) (err error) {
 	processManager := global.Process_Container
-	err = processManager.AwakeProcess(TaskID)
+	err = processManager.AwakeProcess(taskID)
 	if err != nil {
 		log.Println("Failed to wake up process")
 		return err
@@ -171,10 +160,9 @@ func (t *TaskService) AwakeTask(Task system.SysTask) (err error) {
 	return nil
 }
 
-func (t *TaskService) KillTask(Task system.SysTask) (err error) {
-	TaskID := Task.ID
+func (t *TaskService) KillTask(taskID uint) (err error) {
 	processManager := global.Process_Container
-	err = processManager.KillProcess(TaskID)
+	err = processManager.KillProcess(taskID)
 	if err != nil {
 		log.Println("Failed to Kill process")
 		return err
