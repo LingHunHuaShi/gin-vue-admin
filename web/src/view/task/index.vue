@@ -160,20 +160,28 @@ const showStatusDialog = (task) => {
 
 const pauseTask = async() => {
   isLoading.value = true
-  await pauseProcess(currentTask)
+  await pauseProcess({
+    ID: currentTask.value.taskID
+  })
   // isLoading.value = false
 }
 
 const awakeTask = async() => {
-  await awakeProcess(currentTask)
+  await awakeProcess({
+    ID: currentTask.value.taskID
+  })
 }
 
 const startTask = async() => {
-  await startProcess(currentTask)
+  await startProcess({
+    ID: currentTask.value.taskID
+  })
 }
 
 const killTask = async() => {
-  await killProcess(currentTask)
+  await killProcess({
+    ID: currentTask.value.taskID
+  })
 }
 
 onMounted(() => {
@@ -243,19 +251,19 @@ onMounted(() => {
         <el-button
             icon="close"
             type="danger"
-            @click="killProcess"
+            @click="killTask"
         >终止
         </el-button>
         <el-button
             icon="refreshLeft"
             type="primary"
-            @click="awakeProcess"
+            @click="awakeTask"
         >唤醒
         </el-button>
         <el-button
             icon="refreshLeft"
             type="success"
-            @click="startProcess"
+            @click="startTask"
         >启动
         </el-button>
       </template>

@@ -6,43 +6,41 @@ import flvjs from 'flv.js'
 const webSocketUrl = ref('ws://localhost:9999/rtsp?url=')
 const streamNumber = ref(1)
 const rtspStreams = ref([
-  'rtsp://192.168.6.209:8554/stream',
-  'rtsp://192.168.6.209:8554/stream2',
+  'rtsp://192.168.6.129:8554/stream',
+  'rtsp://192.168.6.129:8554/stream2',
 ])
 
-// const playerRefs = rtspStreams.value.map(()=> ref(null))
-const playerRefs = ref([])
-const testFlv = ref(null)
-const selectPlayers = rtspStreams.value.map(()=> ref(null))
+const mainFlvPlayer = ref(null)
 
 const selectDialogVisible = ref(false)
 const selectedStreamOrder = ref(0)
 
 
 const initPlayers = () => {
-  console.log('ref:', playerRefs.value)
   if (flvjs.isSupported()) {
-    for (let i = 0; i < rtspStreams.value.length; i++) {
       const flvPlayer = flvjs.createPlayer({
         isLive: true,
         type: 'flv',
-        url: webSocketUrl + btoa(rtspStreams.value[i]),
+        url: webSocketUrl + btoa(rtspStreams.value[selectedStreamOrder]),
         enableWorker: true,
         enableStashBuffer: false,
         stashInitialSize: 128,
       },{
         deferLoadAfterSourceOpen: false
       })
-      console.log(i)
-      flvPlayer.attachMediaElement(playerRefs.value[i])
-      selectPlayers[i].value = flvPlayer
+      const player = document.getElementById("main-player")
+      flvPlayer.attachMediaElement(player)
+    return flvPlayer
     }
     console.log('init players done')
-  }
 }
 
-const play = () => {
-
+const play = async() => {
+  if (mainFlvPlayer.value != null) {
+    mainFlvPlayer.value.destroy()
+    mainFlvPlayer.value = null
+  }
+  mainFlvPlayer.value = initPlayers()
   if (flvjs.isSupported()) {
     const mainPlayer = flvjs.createPlayer({
       isLive: true,
@@ -56,7 +54,7 @@ const play = () => {
     })
     console.log('rtsp url:', rtspStreams.value[selectedStreamOrder.value])
     console.log('ws url:', webSocketUrl.value + btoa(rtspStreams.value[selectedStreamOrder.value]))
-    const flv = document.getElementById('flv')
+    const flv = document.getElementById('main-player')
     mainPlayer.attachMediaElement(flv)
     try {
       mainPlayer.load()
@@ -82,24 +80,22 @@ const play = () => {
   }
 }
 
-const setRTSP = (streamOrder = 0) => {
-  console.log('rtsp set:', rtspStreams.value[streamOrder])
-}
 
 const openSelectDialog = () => {
   selectDialogVisible.value = true
-  console.log('origin:', document.getElementById('flv'))
-  console.log('ref:', testFlv.value)
 }
 
 const setStream = (streamOrder) => {
+  if (mainFlvPlayer.value != null) {
+    mainFlvPlayer.value.destroy()
+    mainFlvPlayer.value = null
+  }
   selectedStreamOrder.value = streamOrder
-  setRTSP(streamOrder)
   selectDialogVisible.value = false
 }
 
 onMounted(()=>{
-  initPlayers()
+  // initPlayers()
 })
 
 </script>
@@ -112,7 +108,7 @@ onMounted(()=>{
       shadow="hover"
       @click="setStream(index)">
 <!--        <canvas style="height: auto; width: 100%; margin: 0"  :id="'canvas-' + index"/>-->
-        <video ref="playerRefs" style="height: auto; width: 100%; margin: 0" muted controls loop></video>
+<!--        <video ref="playerRefs" style="height: auto; width: 100%; margin: 0" muted controls loop></video>-->
         <div class="body" style="padding: 15pt">
           <span>{{ stream }}</span>
         </div>
@@ -137,9 +133,9 @@ onMounted(()=>{
 <!--                </el-button>-->
               </el-row>
               <el-row>
-                <el-col :xs="24" :sm="12" :md="12" :lg="24/streamNumber">
+                <el-col :xs="24" :sm="24" :md="18" :lg="24">
 <!--                  <canvas id="canvas" style="height: 100%; width: 100%;"/>-->
-                  <video ref="testFlv" id="flv" style="height: 80%; width: 80%;" muted controls loop></video>
+                  <video id="main-player" style="height: 90%; width: 90%;" controls loop></video>
                 </el-col>
               </el-row>
             </el-card>
