@@ -13,8 +13,6 @@ type SysAlgorithm struct {
 	Description      string    `json:"description" gorm:"comment:算法描述"`
 	UpdateDate       time.Time `json:"updateDate" gorm:"comment:更新时间"`
 	Size             float32   `json:"size" gorm:"comment:模型文件大小"`
-	StoragePath      string    `json:"StoragePath" gorm:"comment:存储路径;default:'None'"`
-	Downloaded       bool      `json:"downloaded" gorm:"comment:是否已下载;default:false"`
 	//	DownloadLink     string    `json:"downloadLink" gorm:"comment:模型下载链接"`
 	MD5 string `json:"MD5" gorm:"comment:MD5校验值"`
 }
