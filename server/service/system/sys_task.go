@@ -2,6 +2,8 @@ package system
 
 import (
 	"errors"
+	"strconv"
+
 	//	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -115,12 +117,20 @@ func (t *TaskService) StartTask(taskID uint) (err error) {
 		return errors.New("任务不存在")
 	}
 	var url string = task.VideoSource
-	var model_path string = "./model/yolov5lite-g_train_coco.rknn"
-	cmdName := "./Yolo_Rknn"             // 替换为实际的二进制程序路径
-	cmdArgs := []string{model_path, url} // 替换为实际的参数
 	// 创建一个Cmd对象
+	var algorithm system.SysAlgorithm
+	err = global.GVA_DB.Where("ID = ?", task.AlgorithmID).First(&algorithm).Error
+	if err != nil {
+		return errors.New("算法不存在")
+	}
+
+	var model_path string = "./model/" + algorithm.AlgorithmName + ".rknn"
+	var result_path string = strconv.Itoa(int(task.ID))
+	log.Println(model_path, result_path)
+	cmdName := "./Yolo_Rknn"                          // 替换为实际的二进制程序路径
+	cmdArgs := []string{model_path, url, result_path} // 替换为实际的参数
 	cmd := exec.Command(cmdName, cmdArgs...)
-	cmd.Dir = "/data/yolo/Yolo_Rknn"
+	cmd.Dir = "/data/yolo/" + algorithm.AlgorithmName
 	// 设置命令的标准输入、输出和错误
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
