@@ -43,14 +43,14 @@ import UploadCommon from '@/components/upload/common.vue'
 import { formatDate } from '@/utils/format'
 import WarningBar from '@/components/warningBar/warningBar.vue'
 
-import { ref } from 'vue'
+import {onBeforeUnmount, onMounted, ref} from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {queryOngoingTask} from "@/api/task";
 import {findAlgorithmById} from "@/api/algorithm";
 
 
 const path = ref(import.meta.env.VITE_BASE_API)
-
+const timer = ref(null)
 const picPath = "images/rickroll.png"
 
 // const imageUrl = ref('')
@@ -112,6 +112,14 @@ const getPath = (row) => {
       row.algorithmName.replace(/\s/g, "").toLowerCase() +
       "/" + row.taskID + "/output.jpg"
 }
+
+onMounted(() => {
+  timer.value = setInterval(getTableData, 1000)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(timer.value)
+})
 
 
 </script>
