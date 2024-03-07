@@ -1,79 +1,35 @@
 <template>
   <div v-loading.fullscreen.lock="fullscreenLoading">
     <div class="gva-table-box">
-      <warning-bar
-        title="点击“文件名/备注”可以编辑文件名或者备注内容。"
-      />
-      <div class="gva-btn-list">
-<!--        <upload-common-->
-<!--          v-model:imageCommon="imageCommon"-->
-<!--          class="upload-btn"-->
-<!--          @on-success="getTableData"-->
-<!--        />-->
-<!--        <upload-image-->
-<!--          v-model:imageUrl="imageUrl"-->
-<!--          :file-size="512"-->
-<!--          :max-w-h="1080"-->
-<!--          class="upload-btn"-->
-<!--          @on-success="getTableData"-->
-<!--        />-->
-
-        <el-form ref="searchForm" :inline="true" :model="search">
-          <el-form-item label="">
-            <el-input v-model="search.keyword" class="keyword" placeholder="请输入文件名或备注" />
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" icon="search" @click="getTableData">查询</el-button>
-          </el-form-item>
-        </el-form>
-
-      </div>
-
       <el-table :data="tableData">
         <el-table-column align="left" label="预览" width="100">
           <template #default="scope">
-            <CustomPic pic-type="file" :pic-src="scope.row.url" preview/>
+<!--            <CustomPic pic-type="file" :pic-src="scope.row.url" preview/>-->
+            <CustomPic pic-type="file" :pic-src="getPath(scope.row)" preview/>
+
           </template>
         </el-table-column>
-        <el-table-column align="left" label="日期" prop="UpdatedAt" width="180">
+        <el-table-column align="left" label="任务ID" prop="taskID" width="180">
           <template #default="scope">
-            <div>{{ formatDate(scope.row.UpdatedAt) }}</div>
+            <div>{{ scope.row.taskID }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="文件名/备注" prop="name" min-width="180">
+        <el-table-column align="left" label="算法名" prop="name" min-width="180">
           <template #default="scope">
-            <div class="name" @click="editFileNameFunc(scope.row)">{{ scope.row.name }}</div>
+            <div class="name">{{ scope.row.algorithmName }}</div>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="标记" prop="tag" width="100">
-          <template #default="scope">
-            <el-tag
-              :type="scope.row.tag === '正常' ? 'success' : 'danger'"
-              disable-transitions
-            >{{ scope.row.tag }}
-            </el-tag>
-          </template>
-        </el-table-column>
+<!--        <el-table-column align="left" label="更新时间" prop="updatedAt" min-width="180">-->
+<!--          <template #default="scope">-->
+<!--            <div>{{ formatDate(scope.row.updatedAt) }}</div>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column align="left" label="操作" width="160">
           <template #default="scope">
             <el-button icon="download" type="primary" link @click="downloadFile(scope.row)">下载</el-button>
-            <el-button icon="delete" type="primary" link @click="deleteFileFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div class="gva-pagination">
-        <el-pagination
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :style="{ float: 'right', padding: '20px' }"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -89,9 +45,13 @@ import WarningBar from '@/components/warningBar/warningBar.vue'
 
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import {queryOngoingTask} from "@/api/task";
+import {findAlgorithmById} from "@/api/algorithm";
 
 
 const path = ref(import.meta.env.VITE_BASE_API)
+
+const picPath = "images/rickroll.png"
 
 // const imageUrl = ref('')
 // const imageCommon = ref('')
@@ -102,55 +62,41 @@ const pageSize = ref(10)
 const search = ref({})
 const tableData = ref([])
 
-// 分页
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  getTableData()
-}
-
-const handleCurrentChange = (val) => {
-  page.value = val
-  getTableData()
-}
 
 // 查询
 const getTableData = async() => {
-  const table = await getFileList({ page: page.value, pageSize: pageSize.value, ...search.value })
+  // const table = await getFileList({ page: page.value, pageSize: pageSize.value, ...search.value })
+  // if (table.code === 0) {
+  //   tableData.value = table.data.list
+  //   total.value = table.data.total
+  //   page.value = table.data.page
+  //   pageSize.value = table.data.pageSize
+  // }
+  // console.log(tableData.value)
+
+  const table = await queryOngoingTask();
   if (table.code === 0) {
-    tableData.value = table.data.list
-    total.value = table.data.total
-    page.value = table.data.page
-    pageSize.value = table.data.pageSize
+    tableData.value = await Promise.all(table.data.map(async(item) => {
+      const algorithmName = await findAlgorithmById({ ID: item.algorithmId }).then((res) => {
+        return res.data.algorithmName
+      })
+      const updatedAt = item.UpdatedAt
+      const taskID = item.ID
+
+
+      return {
+        taskID: taskID,
+        algorithmName: algorithmName,
+        updatedAt: updatedAt,
+      }
+    }))
+    total.value = table.data.length
   }
+
+
 }
 getTableData()
 
-const deleteFileFunc = async(row) => {
-  ElMessageBox.confirm('此操作将永久删除文件, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(async() => {
-      const res = await deleteFile(row)
-      if (res.code === 0) {
-        ElMessage({
-          type: 'success',
-          message: '删除成功!',
-        })
-        if (tableData.value.length === 1 && page.value > 1) {
-          page.value--
-        }
-        getTableData()
-      }
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '已取消删除',
-      })
-    })
-}
 
 const downloadFile = (row) => {
   if (row.url.indexOf('http://') > -1 || row.url.indexOf('https://') > -1) {
@@ -161,36 +107,13 @@ const downloadFile = (row) => {
   }
 }
 
-/**
- * 编辑文件名或者备注
- * @param row
- * @returns {Promise<void>}
- */
-const editFileNameFunc = async(row) => {
-  ElMessageBox.prompt('请输入文件名或者备注', '编辑', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputPattern: /\S/,
-    inputErrorMessage: '不能为空',
-    inputValue: row.name
-  }).then(async({ value }) => {
-    row.name = value
-    // console.log(row)
-    const res = await editFileName(row)
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '编辑成功!',
-      })
-      getTableData()
-    }
-  }).catch(() => {
-    ElMessage({
-      type: 'info',
-      message: '取消修改'
-    })
-  })
+const getPath = (row) => {
+  return "images/" +
+      row.algorithmName.replace(/\s/g, "").toLowerCase() +
+      "/" + row.taskID + "/output.jpg"
 }
+
+
 </script>
 
 <script>

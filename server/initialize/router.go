@@ -39,7 +39,7 @@ func Routers() *gin.Engine {
 	global.GVA_LOG.Info("register swagger handler")
 	// 方便统一添加路由组前缀 多服务器上线使用
 
-	Router.Static("/images", "./assets/results")
+	Router.Static("/images", "/data/yolo")
 
 	PublicGroup := Router.Group(global.GVA_CONFIG.System.RouterPrefix)
 	{
