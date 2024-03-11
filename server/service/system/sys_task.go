@@ -34,6 +34,7 @@ type TaskService struct{}
 // 参数 task 任务对象
 // 返回值 被添加的任务对象 错误信息
 func (t *TaskService) CreateTask(task system.SysTask) (taskInter system.SysTask, err error) {
+	task.Status = 0
 	err = global.GVA_DB.Create(&task).Error
 	if err != nil {
 		return task, errors.New("创建任务失败")
@@ -72,6 +73,11 @@ func (t *TaskService) FindTaskByTaskID(taskID uint) (taskInter *system.SysTask, 
 // 返回值 错误信息
 func (t *TaskService) DeleteTask(taskID uint) (err error) {
 	var task system.SysTask
+	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
+	if err != nil {
+		return errors.New("任务不存在")
+	}
+	err = t.KillTask(task.ID)
 	err = global.GVA_DB.Where("ID = ?", taskID).Delete(&task).Error
 	if err != nil {
 		return errors.New("任务不存在")
@@ -147,6 +153,8 @@ func (t *TaskService) StartTask(taskID uint) (err error) {
 			return err
 		}
 	}
+	task.Status = 1
+	err = global.GVA_DB.Model(&task).Updates(task).Error
 	return nil
 }
 

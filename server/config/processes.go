@@ -8,7 +8,7 @@ import (
 	"syscall"
 )
 
-const MaxSize = 4
+const MaxSize = 3
 
 type SysInferenceProcess struct {
 	TaskID  uint

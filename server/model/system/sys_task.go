@@ -16,6 +16,10 @@ type SysTask struct {
 	AlgorithmID  uint      `json:"algorithmId" gorm:"comment:任务容器算法ID"`
 	Intensity    int       `json:"intensity" gorm:"comment:任务粒度"`
 	Status       int       `json:"status" gorm:"comment:任务状态"`
+	/*
+		Status 0	Pending
+		Status 1 	Running
+	*/
 }
 
 func (SysTask) TableName() string {
