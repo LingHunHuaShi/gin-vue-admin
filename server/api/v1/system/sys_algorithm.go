@@ -1,13 +1,19 @@
 package system
 
 import (
-	"encoding/json"
+	"archive/tar"
+	"bytes"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/gin-gonic/gin"
+	"github.com/klauspost/compress/gzip"
 	"go.uber.org/zap"
+	"io"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type AlgorithmApi struct{}
@@ -128,35 +134,94 @@ func (s *AlgorithmApi) QueryAllAlgorithm(c *gin.Context) {
 	response.OkWithDetailed(algos, "查询成功!", c)
 }
 
-// GetAlgorithms  获取云端的算法
-func (s *AlgorithmApi) GetAlgorithms(c *gin.Context) {
-	//调用云端Api
-	resp, err := http.Get("http://...")
+// DownLoadAlgorithms  下载云端的算法
+func (s *AlgorithmApi) DownLoadAlgorithms(c *gin.Context) {
+	var SyncAlgorithm system.SysSyncAlgorithm
+	err := c.ShouldBindJSON(&SyncAlgorithm)
 	if err != nil {
-		global.GVA_LOG.Error("调用云端 API 失败!", zap.Error(err))
-		response.FailWithMessage("调用云端 API 失败: "+err.Error(), c)
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	var url = "http://192.168.x.x:8888/files" + SyncAlgorithm.DownLoadLink
+	var path = "/data/yolo/" + SyncAlgorithm.AlgorithmName
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// 如果文件夹不存在，则创建
+		err := os.MkdirAll(path, 0755)
+		if err != nil {
+			log.Println("创建文件夹失败:", err)
+			response.FailWithMessage("无法创建路径", c)
+			return
+		}
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		response.FailWithMessage("无法下载文件", c)
 		return
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		global.GVA_LOG.Error("云端 API 响应状态码不为 200")
-		response.FailWithMessage("云端 API 响应状态码不为 200", c)
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, resp.Body)
+	if err != nil {
+		response.FailWithMessage("无法读取下载内容", c)
 		return
 	}
 
-	var algorithms []system.SysAlgorithm
-	decoder := json.NewDecoder(resp.Body)
-	if err := decoder.Decode(&algorithms); err != nil {
-		global.GVA_LOG.Error("解码云端 API 响应失败!", zap.Error(err))
-		response.FailWithMessage("解码云端 API 响应失败: "+err.Error(), c)
+	gr, err := gzip.NewReader(&buf)
+	if err != nil {
+		response.FailWithMessage("无法读取下载内容", c)
 		return
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+
+	// 解压缩并保存文件到指定目录
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			response.FailWithMessage("解压错误", c)
+			return
+		}
+
+		// 目标文件路径
+		targetFile := filepath.Join(path, header.Name)
+
+		// 确保目录已创建
+		if header.Typeflag == tar.TypeDir {
+			if err := os.MkdirAll(targetFile, os.FileMode(header.Mode)); err != nil {
+				response.FailWithMessage("创建目录失败", c)
+				return
+			}
+			continue
+		}
+
+		// 创建文件并写入内容
+		file, err := os.OpenFile(targetFile, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+		if err != nil {
+			response.FailWithMessage("创建文件失败", c)
+			return
+		}
+		defer file.Close()
+
+		if _, err := io.Copy(file, tr); err != nil {
+			response.FailWithMessage("写入文件失败", c)
+			return
+		}
 	}
 
-	if err := algorithmService.GetAlgorithms(algorithms); err != nil {
-		global.GVA_LOG.Error("插入数据到数据库失败!", zap.Error(err))
-		response.FailWithMessage("插入数据到数据库失败: "+err.Error(), c)
-		return
+	var algorithm system.SysAlgorithm
+	algorithm.AlgorithmVersion = SyncAlgorithm.AlgorithmVersion
+	algorithm.AlgorithmName = SyncAlgorithm.AlgorithmName
+	algorithm.MD5 = SyncAlgorithm.MD5
+	algorithm.Size = SyncAlgorithm.Size
+	algorithm.UpdatedAt = SyncAlgorithm.UpdateDate
+	algorithm.Description = SyncAlgorithm.Description
+	_, err = algorithmService.CreateAlgorithm(algorithm)
+	if err != nil {
+		response.FailWithMessage("算法创建失败", c)
 	}
-	response.OkWithMessage("成功云端算法获取!", c)
+	response.OkWithMessage("算法下载成功", c)
 }

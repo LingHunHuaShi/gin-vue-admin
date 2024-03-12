@@ -185,5 +185,9 @@ func (t *TaskService) KillTask(taskID uint) (err error) {
 		log.Println("Failed to Kill process")
 		return err
 	}
+	var task system.SysTask
+	err = global.GVA_DB.Where("ID = ?", taskID).First(&task).Error
+	task.Status = 0
+	err = global.GVA_DB.Model(&task).Updates(task).Error
 	return nil
 }

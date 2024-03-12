@@ -4,8 +4,6 @@ import (
 	"errors"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
-	"gorm.io/gorm"
-	"time"
 )
 
 /*
@@ -92,37 +90,4 @@ func (algorithmService *AlgorithmService) QueryAllAlgorithm() (algorithms []syst
 		return nil, err
 	}
 	return algorithms, nil
-}
-
-// GetAlgorithms  获取云端的算法
-// @return error
-func (algorithmService *AlgorithmService) GetAlgorithms(algorithms []system.SysAlgorithm) error {
-	for _, algorithm := range algorithms {
-		var tmp system.SysAlgorithm
-		err := global.GVA_DB.Where("ID = ?", algorithm.ID).First(&tmp)
-
-		if err.Error != nil && !errors.Is(err.Error, gorm.ErrRecordNotFound) {
-			return err.Error
-		}
-
-		if err.Error == gorm.ErrRecordNotFound {
-			err := global.GVA_DB.Create(&algorithm)
-			if err.Error != nil {
-				return err.Error
-			}
-		} else {
-			tmp.AlgorithmName = algorithm.AlgorithmName
-			tmp.AlgorithmVersion = algorithm.AlgorithmVersion
-			tmp.Description = algorithm.Description
-			tmp.UpdateDate = time.Now()
-			tmp.MD5 = algorithm.MD5
-			tmp.Size = algorithm.Size
-			err := global.GVA_DB.Save(&tmp)
-			if err.Error != nil {
-				return err.Error
-			}
-		}
-	}
-
-	return nil
 }

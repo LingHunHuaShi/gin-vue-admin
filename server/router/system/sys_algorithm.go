@@ -17,7 +17,7 @@ func (s *AlgorithmRouter) InitAlgorithmRouter(Router *gin.RouterGroup) {
 		algorithmRouter.DELETE("deleteAlgorithm", algorithmApi.DeleteAlgorithm)
 		algorithmRouter.PUT("updateAlgorithm", algorithmApi.UpdateAlgorithm)
 		algorithmRouter.GET("queryAllAlgorithm", algorithmApi.QueryAllAlgorithm)
-		algorithmRouter.POST("getAlgorithmsByApi", algorithmApi.GetAlgorithms)
+		algorithmRouter.POST("downloadAlgorithm", algorithmApi.DownLoadAlgorithms)
 	}
 
 }
