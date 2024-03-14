@@ -70,16 +70,20 @@ const getIntensity = (num) => {
 
 const getStatus = (num) => {
   switch (num) {
+    // case 0:
+    //   return '正在运行'
+    // case 1:
+    //   return '已暂停'
+    // case 2:
+    //   return '未启动'
+    // case -1:
+    //   return '异常'
+    // default:
+    //   return 'Unknown'
     case 0:
-      return '正在运行'
+      return '未在运行'
     case 1:
-      return '已暂停'
-    case 2:
-      return '未启动'
-    case -1:
-      return '异常'
-    default:
-      return 'Unknown'
+      return '正在运行'
   }
 }
 
@@ -243,24 +247,28 @@ onMounted(() => {
       <br>
       <template #footer>
         <el-button
+            v-if="currentTask.status === '正在运行' "
             icon="videoPause"
             type="warning"
             @click="pauseTask"
         >暂停
         </el-button>
         <el-button
+            v-if="currentTask.status === '正在运行' "
             icon="close"
             type="danger"
             @click="killTask"
         >终止
         </el-button>
         <el-button
+            v-if="currentTask.status === '未在运行' "
             icon="refreshLeft"
             type="primary"
             @click="awakeTask"
         >唤醒
         </el-button>
         <el-button
+            v-if="currentTask.status === '未在运行' "
             icon="refreshLeft"
             type="success"
             @click="startTask"

@@ -35,3 +35,4 @@ server/database/\gva.db
 server/config.yaml
 *.yaml
 *.db
+server/config.yaml

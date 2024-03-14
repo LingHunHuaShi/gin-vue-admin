@@ -41,7 +41,7 @@ const LatestAlgorithm = ref({
   rom: null,
 })
 
-const TerminAlgorithmUpdate = ref(false)
+const TerminAlgorithmUpdate = ref(true)
 const ari_details = ref(false)
 const title = ref('')
 
@@ -107,8 +107,6 @@ const latestAlgorithmDetails = () => {
   title.value = "算法详情——" + LatestAlgorithm.value.algorithmName
 }
 
-const getUpdates = async() => {
-}
 
 const atiDetailsComfrim = () => {
   ari_details.value = false
@@ -163,11 +161,7 @@ onMounted(() => {
         <br/>
         <br/>
         <label v-text="'是否立刻更新算法？'"></label>
-
-
       </div>
-
-
       <div slot="footer" class="dialog-footer align-right" style="margin-top: 20px">
         <el-button @click="cancel">以后再说</el-button>
 
