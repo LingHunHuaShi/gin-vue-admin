@@ -109,7 +109,7 @@ func (t *TaskService) UpdateTask(Task system.SysTask) (updateTask *system.SysTas
 // 参数 None
 // 返回值 []Task 错误信息
 func (t *TaskService) QueryOngoingTask() (Container []*system.SysTask, err error) {
-	err = global.GVA_DB.Where("Status = ?", 0).Find(&Container).Error
+	err = global.GVA_DB.Find(&Container).Error
 	if err != nil {
 		return nil, errors.New("查询失败")
 	}
