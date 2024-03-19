@@ -28,8 +28,8 @@ const terminalForm = ref({
 
 const LatestAlgorithm = ref({
   algorithmId: null,
-  algorithmName: null,
-  algorithmVersion: null,
+  algorithmName: 'yolov5s',
+  algorithmVersion: 'v1.6',
   algorithmDownloadlink: null,
   algorithmSize: null,
   algorithmDescription: null,
@@ -105,6 +105,10 @@ const loginCloud = async() => {
 const latestAlgorithmDetails = () => {
   ari_details.value = true
   title.value = "算法详情——" + LatestAlgorithm.value.algorithmName
+}
+
+const cancel = () => {
+  dialogVisible.value = false
 }
 
 
